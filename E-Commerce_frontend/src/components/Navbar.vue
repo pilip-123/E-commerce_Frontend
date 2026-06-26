@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import logoUrl from '@/assets/logo.svg';
+import logoUrl from '@/assets/logo.png';
 import { RouterLink } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { logout, useAuth } from '@/stores/auth';
@@ -38,7 +38,7 @@ async function handleLogout() {
   <header class="site-header">
     <div class="site-header__inner">
       <RouterLink class="brand" to="/">
-        <img class="brand__logo" :src="logoUrl" alt="E-Commerce logo">
+        <img class="brand__logo" :src="logoUrl" alt="E-Commerce">
         <span class="brand__copy">
           <strong>E-Commerce</strong>
         </span>
@@ -129,8 +129,12 @@ async function handleLogout() {
 }
 
 .brand__logo {
-  width: 32px;
-  height: 32px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 .brand__copy strong {
@@ -220,12 +224,12 @@ async function handleLogout() {
 }
 
 .nav__link--hot:hover {
-  background: rgba(220, 38, 38, 0.08);
+  background: transparent;
 }
 
 .nav__link--hot:global(.router-link-exact-active) {
   color: #dc2626;
-  background: rgba(220, 38, 38, 0.1);
+  background: transparent;
 }
 
 /* ─── Actions ─── */
