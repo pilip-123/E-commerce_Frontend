@@ -33,6 +33,7 @@ async function handleAddToCart(product) {
     return;
   }
   await addToCart(product.id, 1);
+  router.push({ name: 'cart' });
 }
 
 async function handleAddToWishlist(product) {
@@ -41,6 +42,10 @@ async function handleAddToWishlist(product) {
     return;
   }
   await addToWishlist(product.id);
+}
+
+function goToProduct(product) {
+  router.push({ name: 'product-detail', params: { slug: product.slug } });
 }
 
 function discountLabel(promotion) {
@@ -110,7 +115,7 @@ onMounted(fetchActivePromotions);
         <p v-if="promotion.description" class="promo-section__desc">{{ promotion.description }}</p>
 
         <div v-if="promotion.products?.length" class="promo-grid">
-          <article v-for="product in promotion.products" :key="product.id" class="deal-card" :class="{ 'deal-card--oos': !product.stock || product.stock < 1 }">
+          <article v-for="product in promotion.products" :key="product.id" class="deal-card" :class="{ 'deal-card--oos': !product.stock || product.stock < 1 }" @click="goToProduct(product)">
             <div class="deal-card__image">
               <img v-if="product.image" :src="product.image" :alt="product.name">
               <div v-else class="deal-card__placeholder">No image</div>
@@ -124,14 +129,14 @@ onMounted(fetchActivePromotions);
                 <strong class="deal-card__new">{{ formatCurrency(product.discount_price) }}</strong>
               </div>
               <div class="deal-card__actions">
-                <button class="deal-card__cart" type="button" :disabled="!product.stock || product.stock < 1" @click="handleAddToCart(product)">
+                <button class="deal-card__cart" type="button" :disabled="!product.stock || product.stock < 1" @click.stop="handleAddToCart(product)">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                     <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                   </svg>
                   Cart
                 </button>
-                <button class="deal-card__wish" type="button" @click="handleAddToWishlist(product)" title="Save">
+                <button class="deal-card__wish" type="button" @click.stop="handleAddToWishlist(product)" title="Save">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                   </svg>
@@ -359,6 +364,7 @@ onMounted(fetchActivePromotions);
 .deal-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
 }
 
 .deal-card__image {
