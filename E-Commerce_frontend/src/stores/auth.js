@@ -11,9 +11,10 @@ export function useAuth() {
   return state;
 }
 
-function persistAuth(token, user) {
+export function persistAuth(token, user) {
   state.token = token;
   state.user = user;
+  state.ready = true;
   localStorage.setItem('ecommerce_token', token);
   localStorage.setItem('ecommerce_user', JSON.stringify(user));
 }
