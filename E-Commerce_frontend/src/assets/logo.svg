@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="E-Commerce logo">
+  <defs>
+    <linearGradient id="bg" x1="18" x2="112" y1="14" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22c55e"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="32" x2="96" y1="28" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ecfdf5"/>
+      <stop offset="1" stop-color="#d1fae5"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="32" fill="url(#bg)"/>
+  <path
+    d="M40 48h48c2.2 0 4 1.8 4 4v28c0 8.8-7.2 16-16 16H52c-8.8 0-16-7.2-16-16V52c0-2.2 1.8-4 4-4Z"
+    fill="url(#shine)"
+  />
+  <path
+    d="M48 49c0-9 6.9-17 16-17s16 8 16 17"
+    fill="none"
+    stroke="#ffffff"
+    stroke-linecap="round"
+    stroke-width="7"
+  />
+  <path d="M48 66h32v8c0 6.6-5.4 12-12 12H60c-6.6 0-12-5.4-12-12v-8Z" fill="#16a34a"/>
+  <circle cx="56" cy="72" r="3.5" fill="#ffffff"/>
+  <circle cx="72" cy="72" r="3.5" fill="#ffffff"/>
+  <path d="M59 78c1.6 1.9 3.6 2.9 5 2.9s3.4-1 5-2.9" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-width="3"/>
+</svg>
