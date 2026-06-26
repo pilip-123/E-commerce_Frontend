@@ -44,8 +44,8 @@ export async function fetchProducts(params = {}) {
   }
 }
 
-export async function fetchProduct(slug) {
-  const { data } = await api.get(`/products/${slug}`);
+export async function fetchProduct(id) {
+  const { data } = await api.get(`/products/${id}`);
   state.product = data.data;
   return state.product;
 }

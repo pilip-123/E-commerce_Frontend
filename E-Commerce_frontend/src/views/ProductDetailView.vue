@@ -64,7 +64,7 @@ async function submitReview() {
     reviewMessage.value = 'Review submitted!';
     userRating.value = 0;
     reviewComment.value = '';
-    await fetchProduct(route.params.slug);
+    await fetchProduct(route.params.id);
   } catch (error) {
     reviewMessage.value = error.response?.data?.message ?? 'Unable to submit review.';
   } finally {

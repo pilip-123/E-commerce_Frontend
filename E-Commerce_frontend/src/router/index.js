@@ -17,7 +17,7 @@ import { fetchCurrentUser, useAuth } from '../stores/auth';
 const routes = [
   { path: '/', name: 'home', component: HomeView },
   { path: '/products', name: 'products', component: ProductsView },
-  { path: '/products/:slug', name: 'product-detail', component: ProductDetailView, props: true },
+  { path: '/products/:id', name: 'product-detail', component: ProductDetailView, props: true },
   { path: '/categories', name: 'categories', component: CategoriesView },
   { path: '/promotions', name: 'promotions', component: PromotionsView },
   { path: '/login', name: 'login', component: LoginView, meta: { guestOnly: true } },
