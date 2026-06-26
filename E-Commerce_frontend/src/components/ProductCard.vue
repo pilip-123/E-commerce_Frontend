@@ -58,7 +58,7 @@ const outOfStock = computed(() => !props.product?.stock || props.product.stock <
       </div>
 
       <div class="product-card__actions">
-        <RouterLink class="button button--ghost" :to="{ name: 'product-detail', params: { slug: product?.slug } }">
+        <RouterLink class="button button--ghost" :to="{ name: 'product-detail', params: { id: product?.id } }">
           View
         </RouterLink>
         <button class="button" type="button" @click="emit('add-to-cart', product)">Cart</button>

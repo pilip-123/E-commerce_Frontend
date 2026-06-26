@@ -45,7 +45,7 @@ async function handleAddToWishlist(product) {
 }
 
 function goToProduct(product) {
-  router.push({ name: 'product-detail', params: { slug: product.slug } });
+  router.push({ name: 'product-detail', params: { id: product.id } });
 }
 
 function discountLabel(promotion) {

@@ -5,9 +5,11 @@ import ProductCard from '@/components/ProductCard.vue';
 import { addToCart } from '@/stores/cart';
 import { addToWishlist } from '@/stores/wishlist';
 import { fetchCategories, fetchProducts, useProduct } from '@/stores/product';
+import { useAuth } from '@/stores/auth';
 
 const router = useRouter();
 const productState = useProduct();
+const auth = useAuth();
 
 const filters = reactive({
   search: '',
@@ -41,11 +43,19 @@ async function handleReset() {
 }
 
 async function handleAddToCart(product) {
+  if (!auth.token) {
+    router.push({ name: 'login', query: { redirect: router.currentRoute.value.fullPath } });
+    return;
+  }
   await addToCart(product.id, 1);
   await router.push({ name: 'cart' });
 }
 
 async function handleAddToWishlist(product) {
+  if (!auth.token) {
+    router.push({ name: 'login', query: { redirect: router.currentRoute.value.fullPath } });
+    return;
+  }
   await addToWishlist(product.id);
 }
 

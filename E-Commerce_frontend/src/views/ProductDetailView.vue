@@ -73,7 +73,7 @@ async function submitReview() {
 }
 
 onMounted(async () => {
-  await fetchProduct(route.params.slug);
+  await fetchProduct(route.params.id);
 });
 
 async function handleAddToCart() {
