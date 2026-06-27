@@ -10,7 +10,7 @@ const emit = defineEmits(['add-to-cart', 'remove']);
 
 <template>
   <article class="line-item">
-    <img v-if="item?.product?.image" :src="item.product.image" :alt="item.product.name" class="line-item__image">
+    <img v-if="item?.product?.image" :src="item.product.image" :alt="item.product.name" class="line-item__image" loading="lazy">
     <div class="line-item__body">
       <div>
         <h3>{{ item?.product?.name ?? 'Wishlist Item' }}</h3>

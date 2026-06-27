@@ -22,12 +22,12 @@ async function handleRemove(item) {
 <template>
   <div class="page">
     <section class="section">
-      <div class="section__header">
+      <div class="section__header flex-col sm:flex-row items-start sm:items-end gap-3 sm:gap-4">
         <div>
           <p class="eyebrow">Wishlist</p>
           <h2>Saved items</h2>
         </div>
-        <RouterLink class="button button--ghost" to="/products">Products</RouterLink>
+        <RouterLink class="button button--ghost w-full sm:w-auto" to="/products">Products</RouterLink>
       </div>
 
       <div class="stack">

@@ -31,11 +31,12 @@ const outOfStock = computed(() => !props.product?.stock || props.product.stock <
 <template>
   <article class="product-card" :class="{ 'product-card--oos': outOfStock }">
     <div class="product-card__image">
-      <img
-        v-if="product?.image"
-        :src="product.image"
-        :alt="product.name"
-      >
+        <img
+          v-if="product?.image"
+          :src="product.image"
+          :alt="product.name"
+          loading="lazy"
+        >
       <div v-else class="product-card__placeholder">No image</div>
       <span v-if="discountLabel" class="product-card__badge">{{ discountLabel }}</span>
     </div>
@@ -58,16 +59,16 @@ const outOfStock = computed(() => !props.product?.stock || props.product.stock <
       </div>
 
       <div class="product-card__actions">
-        <RouterLink class="button button--ghost" :to="{ name: 'product-detail', params: { id: product?.id } }">
+        <RouterLink class="button button--ghost w-full sm:w-auto" :to="{ name: 'product-detail', params: { id: product?.id } }">
           View
         </RouterLink>
-        <button class="button" type="button" @click="emit('add-to-cart', product)">Cart</button>
-        <button class="button button--secondary" type="button" @click="emit('add-to-wishlist', product)">
+        <button class="button w-full sm:w-auto" type="button" @click="emit('add-to-cart', product)">Cart</button>
+        <button class="button button--secondary w-full sm:w-auto" type="button" @click="emit('add-to-wishlist', product)">
           Save
         </button>
         <template v-if="admin">
-          <button class="button button--ghost" type="button" @click="emit('edit', product)">Edit</button>
-          <button class="button button--secondary" type="button" @click="emit('delete', product)">Delete</button>
+          <button class="button button--ghost w-full sm:w-auto" type="button" @click="emit('edit', product)">Edit</button>
+          <button class="button button--secondary w-full sm:w-auto" type="button" @click="emit('delete', product)">Delete</button>
         </template>
       </div>
     </div>
@@ -156,5 +157,36 @@ const outOfStock = computed(() => !props.product?.stock || props.product.stock <
 .product-card--oos .button--ghost {
   opacity: 0.5;
   pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .product-card__body {
+    padding: 14px;
+  }
+
+  .product-card__title {
+    font-size: 1rem;
+  }
+
+  .product-card__text {
+    font-size: 0.85rem;
+    min-height: 0;
+  }
+
+  .product-card__actions {
+    flex-direction: column;
+  }
+
+  .product-card__actions .button {
+    justify-content: center;
+  }
+
+  .product-card__meta {
+    margin-top: 12px;
+  }
+
+  .price-new {
+    font-size: 0.95rem;
+  }
 }
 </style>

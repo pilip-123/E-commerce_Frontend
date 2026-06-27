@@ -127,7 +127,7 @@ onUnmounted(() => {
         <div v-if="promotion.products?.length" class="promo-grid">
           <article v-for="product in promotion.products" :key="product.id" class="deal-card" :class="{ 'deal-card--oos': !product.stock || product.stock < 1 }" @click="goToProduct(product)">
             <div class="deal-card__image">
-              <img v-if="product.image" :src="product.image" :alt="product.name">
+              <img v-if="product.image" :src="product.image" :alt="product.name" loading="lazy">
               <div v-else class="deal-card__placeholder">No image</div>
               <span v-if="product.stock > 0" class="deal-card__badge">{{ discountLabel(promotion) }}</span>
               <span v-else class="deal-card__badge deal-card__badge--oos">Out of stock</span>
@@ -146,7 +146,7 @@ onUnmounted(() => {
                   </svg>
                   Cart
                 </button>
-                <button class="deal-card__wish" type="button" @click.stop="handleAddToWishlist(product)" title="Save">
+                <button class="deal-card__wish min-w-[44px] min-h-[44px]" type="button" @click.stop="handleAddToWishlist(product)" title="Save">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                   </svg>

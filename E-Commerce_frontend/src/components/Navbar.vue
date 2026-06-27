@@ -48,7 +48,7 @@ async function handleLogout() {
         <span /><span /><span />
       </button>
 
-      <nav class="nav" :class="{ 'nav--open': mobileOpen }">
+      <nav class="nav md:flex hidden">
         <div class="nav__primary">
           <RouterLink to="/" class="nav__link" @click="mobileOpen = false">Home</RouterLink>
           <RouterLink to="/products" class="nav__link" @click="mobileOpen = false">Products</RouterLink>
@@ -59,7 +59,6 @@ async function handleLogout() {
           <RouterLink to="/cart" class="nav__link" @click="mobileOpen = false">Cart</RouterLink>
           <RouterLink to="/wishlist" class="nav__link" @click="mobileOpen = false">Wishlist</RouterLink>
           <RouterLink to="/orders" class="nav__link" @click="mobileOpen = false">Orders</RouterLink>
-          <RouterLink v-if="auth.user?.role === 'admin'" to="/admin/promotions" class="nav__link nav__link--admin" @click="mobileOpen = false">Manage Promos</RouterLink>
         </div>
       </nav>
 
@@ -87,6 +86,25 @@ async function handleLogout() {
       </div>
     </div>
   </header>
+
+  <nav class="nav-mobile" :class="{ 'nav-mobile--open': mobileOpen }">
+    <div class="nav__primary">
+      <RouterLink to="/" class="nav__link" @click="mobileOpen = false">Home</RouterLink>
+      <RouterLink to="/products" class="nav__link" @click="mobileOpen = false">Products</RouterLink>
+      <RouterLink to="/promotions" class="nav__link nav__link--hot" @click="mobileOpen = false">Promotions</RouterLink>
+    </div>
+
+    <div v-if="auth.user" class="nav__secondary">
+      <RouterLink to="/cart" class="nav__link" @click="mobileOpen = false">Cart</RouterLink>
+      <RouterLink to="/wishlist" class="nav__link" @click="mobileOpen = false">Wishlist</RouterLink>
+      <RouterLink to="/orders" class="nav__link" @click="mobileOpen = false">Orders</RouterLink>
+        </div>
+
+        <div v-if="!auth.user" class="nav__secondary">
+      <RouterLink to="/login" class="nav__link" @click="mobileOpen = false">Login</RouterLink>
+      <RouterLink to="/register" class="nav__link" @click="mobileOpen = false">Register</RouterLink>
+    </div>
+  </nav>
 
   <ConfirmModal
     :show="showLogoutModal"
@@ -183,6 +201,10 @@ async function handleLogout() {
   align-items: center;
   gap: 4px;
   flex: 1;
+}
+
+.nav-mobile {
+  display: none;
 }
 
 .nav__primary {
@@ -297,28 +319,54 @@ async function handleLogout() {
   color: #dc2626;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .hamburger {
     display: flex;
+    margin-left: 0;
   }
 
-  .nav {
+  .hamburger span {
+    min-height: 3px;
+  }
+
+  .site-header__inner {
+    padding: 0 16px;
+    height: 56px;
+    gap: 8px;
+  }
+
+  .brand__logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .brand__copy strong {
+    font-size: 0.88rem;
+  }
+
+  .nav-mobile {
+    display: block;
     position: fixed;
-    top: 64px;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 56px;
+    right: 12px;
+    width: min(280px, 80vw);
     flex-direction: column;
     align-items: stretch;
     gap: 0;
     padding: 16px;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transform: translateX(100%);
+    background: #fff;
+    transform: translateX(120%);
     transition: transform 0.25s ease;
     overflow-y: auto;
-    z-index: 40;
+    z-index: 999;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    max-height: calc(100vh - 80px);
+  }
+
+  .nav-mobile--open {
+    transform: translateX(0);
   }
 
   .nav--open {
@@ -339,12 +387,50 @@ async function handleLogout() {
   }
 
   .nav__link {
-    padding: 12px 16px;
+    padding: 14px 16px;
     font-size: 1rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
 
   .nav-actions {
     gap: 4px;
+  }
+
+  .nav-user__avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-logout {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 380px) {
+  .site-header__inner {
+    padding: 0 12px;
+    gap: 6px;
+  }
+
+  .brand__logo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .brand__copy {
+    display: none;
+  }
+
+  .brand {
+    gap: 0;
+  }
+
+  .nav-actions .button--sm {
+    padding: 6px 10px;
+    font-size: 0.75rem;
   }
 }
 </style>

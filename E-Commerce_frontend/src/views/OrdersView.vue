@@ -79,7 +79,7 @@ onMounted(loadOrders);
           </svg>
           <p class="orders-empty__title">No orders yet</p>
           <p class="orders-empty__sub">Your orders will appear here once you make a purchase.</p>
-          <RouterLink class="button" to="/products">Start Shopping</RouterLink>
+          <RouterLink class="button w-full sm:w-auto" to="/products">Start Shopping</RouterLink>
         </div>
 
         <div class="orders-list">
@@ -111,6 +111,7 @@ onMounted(loadOrders);
                     :src="item.product.image"
                     :alt="item.product.name"
                     class="order-item__img"
+                    loading="lazy"
                   >
                   <div v-else class="order-item__img order-item__img--placeholder">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">

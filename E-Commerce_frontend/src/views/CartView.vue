@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted, reactive } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import CartItem from '@/components/CartItem.vue';
 import { formatCurrency } from '@/utils/format';
@@ -21,6 +21,40 @@ const promoState = reactive({
   promotions: [],
   loading: false,
 });
+
+const discountCode = ref('');
+const discountApplied = ref(loadDiscount());
+const discountError = ref('');
+const applyingDiscount = ref(false);
+
+function loadDiscount() {
+  try {
+    return JSON.parse(localStorage.getItem('cart_discount') || 'null');
+  } catch {
+    return null;
+  }
+}
+
+function saveDiscount(d) {
+  if (d) {
+    localStorage.setItem('cart_discount', JSON.stringify(d));
+  } else {
+    localStorage.removeItem('cart_discount');
+  }
+}
+
+const originalTotal = computed(() => cartState.total);
+
+const discountAmount = computed(() => {
+  if (!discountApplied.value) return 0;
+  const total = cartState.total;
+  if (discountApplied.value.type === 'percentage') {
+    return total * (discountApplied.value.value / 100);
+  }
+  return Math.min(discountApplied.value.value, total);
+});
+
+const finalTotal = computed(() => formatCurrency(cartState.total - discountAmount.value));
 
 const total = computed(() => formatCurrency(cartState.total));
 
@@ -99,17 +133,51 @@ function discountLabel(promotion) {
 function goToProduct(product) {
   router.push({ name: 'product-detail', params: { id: product.id } });
 }
+
+async function applyDiscount() {
+  const code = discountCode.value.trim().toUpperCase();
+  if (!code) return;
+
+  if (!code.startsWith('VIP-') || code.length < 8) {
+    discountError.value = 'Invalid VIP code format.';
+    return;
+  }
+
+  applyingDiscount.value = true;
+  discountError.value = '';
+
+  try {
+    const { data } = await api.post('/check-discount', { code });
+    const applied = { type: data.type, value: data.value, code };
+    discountApplied.value = applied;
+    saveDiscount(applied);
+    discountError.value = '';
+  } catch (e) {
+    discountApplied.value = null;
+    saveDiscount(null);
+    discountError.value = e.response?.data?.message || 'Invalid or expired code.';
+  } finally {
+    applyingDiscount.value = false;
+  }
+}
+
+function removeDiscount() {
+  discountApplied.value = null;
+  discountCode.value = '';
+  discountError.value = '';
+  saveDiscount(null);
+}
 </script>
 
 <template>
   <div class="page">
     <section class="section">
-      <div class="section__header">
+      <div class="section__header flex-col sm:flex-row items-start sm:items-end gap-3 sm:gap-4">
         <div>
           <p class="eyebrow">Cart</p>
           <h2>Your cart</h2>
         </div>
-        <RouterLink class="button button--ghost" to="/products">Shop more</RouterLink>
+        <RouterLink class="button button--ghost w-full sm:w-auto" to="/products">Shop more</RouterLink>
       </div>
 
       <div class="stack">
@@ -130,19 +198,56 @@ function goToProduct(product) {
 
     <section class="panel checkout-summary">
       <h3>Summary</h3>
-      <p>Total: <strong>{{ total }}</strong></p>
-      <button class="button" type="button" :disabled="!cartState.items.length" @click="router.push({ name: 'checkout' })">
+
+      <div class="mb-4">
+        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color: #16a34a;">Discount Code</p>
+        <div v-if="!discountApplied" class="flex gap-2">
+          <input
+            v-model="discountCode"
+            type="text"
+            placeholder="Enter VIP code..."
+            class="input flex-1"
+            @keyup.enter="applyDiscount"
+          >
+          <button class="button button--sm" type="button" :disabled="applyingDiscount || !discountCode.trim()" @click="applyDiscount">
+            {{ applyingDiscount ? '...' : 'Apply' }}
+          </button>
+        </div>
+        <div v-else class="flex items-center gap-2 rounded-lg px-3 py-2" style="background: #f0fdf4;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+          <span class="text-sm font-semibold flex-1" style="color: #065f46;">{{ discountApplied.code }}</span>
+          <button class="text-xs font-semibold" style="color: #dc2626;" type="button" @click="removeDiscount">Remove</button>
+        </div>
+        <p v-if="discountError" class="text-xs mt-1" style="color: #dc2626;">{{ discountError }}</p>
+      </div>
+
+      <div class="space-y-2">
+        <div class="flex justify-between text-sm">
+          <span class="text-muted">Subtotal</span>
+          <span>{{ total }}</span>
+        </div>
+        <div v-if="discountApplied" class="flex justify-between text-sm">
+          <span class="text-muted">Discount</span>
+          <span style="color: #16a34a;">-{{ formatCurrency(discountAmount) }}</span>
+        </div>
+        <div class="flex justify-between font-bold pt-2 border-t" style="border-color: var(--line);">
+          <span>Total</span>
+          <span>{{ discountApplied ? finalTotal : total }}</span>
+        </div>
+      </div>
+
+      <button class="button w-full mt-4" type="button" :disabled="!cartState.items.length" @click="router.push({ name: 'checkout' })">
         Checkout
       </button>
     </section>
 
     <section v-if="promoProducts.length" class="section cart-promo">
-      <div class="section__header">
+      <div class="section__header flex-col sm:flex-row items-start sm:items-end gap-3 sm:gap-4">
         <div>
           <p class="eyebrow">Deals</p>
           <h2>You might also like</h2>
         </div>
-        <RouterLink class="button button--ghost" to="/promotions">View all</RouterLink>
+        <RouterLink class="button button--ghost w-full sm:w-auto" to="/promotions">View all</RouterLink>
       </div>
 
       <div class="cart-promotion-products">
@@ -154,7 +259,7 @@ function goToProduct(product) {
           @click="goToProduct(product)"
         >
           <div class="cart-promo-card__image">
-            <img v-if="product.image" :src="product.image" :alt="product.name">
+            <img v-if="product.image" :src="product.image" :alt="product.name" loading="lazy">
             <div v-else class="cart-promo-card__placeholder">No image</div>
             <span v-if="product.stock > 0" class="cart-promo-card__badge">{{ discountLabel(product.promotion) }}</span>
             <span v-else class="cart-promo-card__badge cart-promo-card__badge--oos">Out of stock</span>

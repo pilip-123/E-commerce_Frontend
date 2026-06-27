@@ -12,7 +12,6 @@ import OrdersView from '../views/OrdersView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import CategoriesView from '../views/CategoriesView.vue';
 import PromotionsView from '../views/PromotionsView.vue';
-import PromotionManagement from '../views/PromotionManagement.vue';
 import { fetchCurrentUser, useAuth } from '../stores/auth';
 
 const routes = [
@@ -21,7 +20,6 @@ const routes = [
   { path: '/products/:id', name: 'product-detail', component: ProductDetailView, props: true },
   { path: '/categories', name: 'categories', component: CategoriesView },
   { path: '/promotions', name: 'promotions', component: PromotionsView },
-  { path: '/admin/promotions', name: 'admin-promotions', component: PromotionManagement, meta: { requiresAuth: true } },
   { path: '/login', name: 'login', component: LoginView, meta: { guestOnly: true } },
   { path: '/register', name: 'register', component: RegisterView, meta: { guestOnly: true } },
   { path: '/wishlist', name: 'wishlist', component: WishlistView, meta: { requiresAuth: true } },

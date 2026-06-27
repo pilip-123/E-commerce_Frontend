@@ -14,6 +14,16 @@ const submitting = ref(false);
 const errorMessage = ref('');
 const showConfirmModal = ref(false);
 
+function loadDiscount() {
+  try {
+    return JSON.parse(localStorage.getItem('cart_discount') || 'null');
+  } catch {
+    return null;
+  }
+}
+
+const discount = ref(loadDiscount());
+
 const form = reactive({
   phone: auth.user?.phone ?? '',
   shipping_address: auth.user?.address ?? '',
@@ -26,6 +36,17 @@ const originalTotal = computed(() => {
     return sum + (item.product.price * item.quantity);
   }, 0);
 });
+
+const discountAmount = computed(() => {
+  if (!discount.value) return 0;
+  const t = cartState.total;
+  if (discount.value.type === 'percentage') {
+    return t * (discount.value.value / 100);
+  }
+  return Math.min(discount.value.value, t);
+});
+
+const finalTotal = computed(() => formatCurrency(cartState.total - discountAmount.value));
 
 const totalSavings = computed(() => {
   const saved = originalTotal.value - cartState.total;
@@ -45,7 +66,12 @@ async function handleSubmit() {
   errorMessage.value = '';
 
   try {
-    await api.post('/checkout', form);
+    const payload = { ...form };
+    if (discount.value?.code) {
+      payload.discount_code = discount.value.code;
+    }
+    await api.post('/checkout', payload);
+    localStorage.removeItem('cart_discount');
     await clearCart();
     showConfirmModal.value = false;
     await router.push({ name: 'orders' });
@@ -69,7 +95,7 @@ async function handleSubmit() {
           <input v-model="form.phone" class="input" type="text" placeholder="Phone" required>
           <textarea v-model="form.shipping_address" class="textarea" rows="4" placeholder="Shipping address" required></textarea>
           <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
-          <button class="button" type="submit" :disabled="submitting">
+          <button class="button w-full" type="submit" :disabled="submitting">
             {{ submitting ? 'Processing...' : 'Place order' }}
           </button>
         </form>
@@ -90,9 +116,13 @@ async function handleSubmit() {
             </span>
           </div>
         </div>
+        <div v-if="discount" class="summary-line" style="border-color: #d1fae5;">
+          <span class="summary-line__name" style="color: #065f46;">Discount ({{ discount.code }})</span>
+          <span class="summary-line__amount" style="color: #16a34a;">-{{ formatCurrency(discountAmount) }}</span>
+        </div>
         <div class="summary-total">
           <span>Total</span>
-          <strong>{{ total }}</strong>
+          <strong>{{ discount ? finalTotal : total }}</strong>
         </div>
         <div v-if="totalSavings" class="summary-savings">
           You save <strong>{{ totalSavings }}</strong>

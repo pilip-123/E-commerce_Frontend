@@ -130,6 +130,7 @@ async function socialLogin(provider) {
   display: grid;
   place-items: center;
   min-height: calc(100vh - 64px);
+  min-height: calc(100svh - 64px);
   padding: 32px 20px;
 }
 
@@ -361,13 +362,31 @@ async function socialLogin(provider) {
   flex-shrink: 0;
 }
 
-@media (max-width: 520px) {
+@media (max-width: 640px) {
   .auth-card {
     padding: 28px 20px 24px;
+    border-radius: 20px;
   }
 
   .auth-row {
     grid-template-columns: 1fr;
+  }
+
+  .auth-social {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-logo {
+    width: 56px;
+    height: 56px;
+  }
+
+  .auth-card__title {
+    font-size: 1.3rem;
+  }
+
+  .auth-page {
+    padding: 20px 16px;
   }
 }
 </style>

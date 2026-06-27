@@ -107,9 +107,9 @@ onUnmounted(() => {
           <input v-model="filters.min_price" class="input" type="number" step="0.01" placeholder="Min price">
           <input v-model="filters.max_price" class="input" type="number" step="0.01" placeholder="Max price">
         </div>
-        <div class="filters-form__actions">
-          <button class="button" type="submit">Search</button>
-          <button v-if="hasFilters" class="button button--ghost" type="button" @click="handleReset">Clear</button>
+        <div class="filters-form__actions flex-col sm:flex-row">
+          <button class="button w-full sm:w-auto" type="submit">Search</button>
+          <button v-if="hasFilters" class="button button--ghost w-full sm:w-auto" type="button" @click="handleReset">Clear</button>
         </div>
       </form>
     </section>

@@ -23,7 +23,7 @@ const discountLabel = computed(() => {
 <template>
   <article class="line-item">
     <div class="line-item__image-wrap">
-      <img v-if="item?.product?.image" :src="item.product.image" :alt="item.product.name" class="line-item__image">
+      <img v-if="item?.product?.image" :src="item.product.image" :alt="item.product.name" class="line-item__image" loading="lazy">
       <span v-if="discountLabel" class="line-item__badge">{{ discountLabel }}</span>
     </div>
     <div class="line-item__body">
@@ -37,10 +37,10 @@ const discountLabel = computed(() => {
       </div>
       <div class="line-item__right">
         <div class="line-item__controls">
-          <button class="button button--ghost" type="button" @click="emit('decrease', item)">-</button>
+          <button class="button button--ghost min-w-[44px] min-h-[44px]" type="button" @click="emit('decrease', item)">-</button>
           <span>{{ item?.quantity ?? 1 }}</span>
-          <button class="button button--ghost" type="button" @click="emit('increase', item)">+</button>
-          <button class="button button--secondary" type="button" @click="emit('remove', item)">Delete</button>
+          <button class="button button--ghost min-w-[44px] min-h-[44px]" type="button" @click="emit('increase', item)">+</button>
+          <button class="button button--secondary min-h-[44px]" type="button" @click="emit('remove', item)">Delete</button>
         </div>
         <strong class="line-item__subtotal">{{ formatCurrency(subtotal) }}</strong>
       </div>

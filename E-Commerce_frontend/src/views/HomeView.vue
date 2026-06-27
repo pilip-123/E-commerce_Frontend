@@ -48,8 +48,8 @@ async function handleAddToWishlist(product) {
         <h1>Shop green. Shop fast.</h1>
         <p class="hero-section__lead">Discover our curated collection of products. Browse, save to your wishlist, and checkout in just a few clicks.</p>
         <div class="hero-section__actions">
-          <RouterLink class="button" to="/products">Browse Products</RouterLink>
-          <RouterLink class="button button--ghost" to="/categories">Categories</RouterLink>
+          <RouterLink class="button w-full sm:w-auto" to="/products">Browse Products</RouterLink>
+          <RouterLink class="button button--ghost w-full sm:w-auto" to="/categories">Categories</RouterLink>
         </div>
       </div>
       <div class="hero-section__visual">
@@ -72,12 +72,12 @@ async function handleAddToWishlist(product) {
 
     <!-- Categories -->
     <section class="section">
-      <div class="section__header">
+      <div class="section__header flex-col sm:flex-row items-start sm:items-end gap-3 sm:gap-4">
         <div>
           <p class="eyebrow">Categories</p>
           <h2>Browse categories</h2>
         </div>
-        <RouterLink class="button button--ghost" to="/categories">View all</RouterLink>
+        <RouterLink class="button button--ghost w-full sm:w-auto" to="/categories">View all</RouterLink>
       </div>
 
       <div v-if="productState.categories.length" class="chip-grid">
@@ -94,12 +94,12 @@ async function handleAddToWishlist(product) {
 
     <!-- Featured Products (3 only) -->
     <section class="section">
-      <div class="section__header">
+      <div class="section__header flex-col sm:flex-row items-start sm:items-end gap-3 sm:gap-4">
         <div>
           <p class="eyebrow">Featured</p>
           <h2>Featured picks</h2>
         </div>
-        <RouterLink class="button button--ghost" to="/products">View all</RouterLink>
+        <RouterLink class="button button--ghost w-full sm:w-auto" to="/products">View all</RouterLink>
       </div>
 
       <div v-if="productState.loading" class="empty-state">
@@ -203,7 +203,7 @@ async function handleAddToWishlist(product) {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
   .hero-section {
     grid-template-columns: 1fr;
   }
@@ -212,7 +212,7 @@ async function handleAddToWishlist(product) {
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 640px) {
   .grid-products--3 {
     grid-template-columns: 1fr;
   }

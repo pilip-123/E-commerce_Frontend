@@ -33,16 +33,16 @@ onMounted(fetchCategories);
     </section>
 
     <section class="section">
-      <div class="section__header">
+      <div class="section__header flex-col sm:flex-row items-start sm:items-end gap-3 sm:gap-4">
         <div>
           <p class="eyebrow">Overview</p>
           <h2>All categories</h2>
         </div>
-        <RouterLink class="button button--ghost" to="/products">All Products</RouterLink>
+        <RouterLink class="button button--ghost w-full sm:w-auto" to="/products">All Products</RouterLink>
       </div>
 
-      <div v-if="productState.categories.length" class="cat-table-wrap">
-        <table class="cat-table">
+      <div v-if="productState.categories.length" class="cat-table-wrap overflow-x-auto">
+        <table class="cat-table min-w-[640px]">
           <thead>
             <tr>
               <th class="col-num">#</th>

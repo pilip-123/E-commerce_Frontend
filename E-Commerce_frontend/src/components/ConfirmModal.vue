@@ -102,6 +102,24 @@ const emit = defineEmits(['confirm', 'cancel']);
   justify-content: center;
 }
 
+@media (max-width: 640px) {
+  .modal__actions {
+    flex-direction: column;
+  }
+
+  .modal__actions .button {
+    width: 100%;
+  }
+
+  .modal {
+    padding: 24px 20px;
+  }
+
+  .modal__title {
+    font-size: 1.05rem;
+  }
+}
+
 .button--danger {
   background: #dc2626;
 }

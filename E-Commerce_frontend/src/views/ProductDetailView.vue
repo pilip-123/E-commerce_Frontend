@@ -103,7 +103,7 @@ function formatDate(date) {
   <div class="page">
     <section v-if="productState.product" class="detail" :class="{ 'detail--oos': outOfStock }">
       <div class="detail__media">
-        <img v-if="productState.product.image" :src="productState.product.image" :alt="productState.product.name" class="detail__image">
+        <img v-if="productState.product.image" :src="productState.product.image" :alt="productState.product.name" class="detail__image" loading="lazy">
         <span v-if="discountLabel" class="detail__badge">{{ discountLabel }}</span>
         <span v-if="outOfStock" class="detail__badge detail__badge--oos">Out of stock</span>
       </div>
@@ -135,9 +135,9 @@ function formatDate(date) {
         </div>
 
         <div class="detail__actions">
-          <button class="button" type="button" :disabled="outOfStock" @click="handleAddToCart">Cart</button>
-          <button class="button button--secondary" type="button" @click="handleAddToWishlist">Save</button>
-          <button class="button button--ghost" type="button" @click="router.back()">Back</button>
+          <button class="button w-full sm:w-auto" type="button" :disabled="outOfStock" @click="handleAddToCart">Cart</button>
+          <button class="button button--secondary w-full sm:w-auto" type="button" @click="handleAddToWishlist">Save</button>
+          <button class="button button--ghost w-full sm:w-auto" type="button" @click="router.back()">Back</button>
         </div>
       </div>
     </section>
@@ -164,7 +164,7 @@ function formatDate(date) {
         </div>
         <textarea v-model="reviewComment" class="input textarea" rows="3" placeholder="Share your thoughts about this product..."></textarea>
         <p v-if="reviewMessage" class="form-success" v-show="reviewMessage">{{ reviewMessage }}</p>
-        <button class="button" type="button" :disabled="!userRating || submitting" @click="submitReview">
+        <button class="button w-full sm:w-auto" type="button" :disabled="!userRating || submitting" @click="submitReview">
           {{ submitting ? 'Submitting...' : 'Submit Review' }}
         </button>
       </div>
@@ -172,8 +172,8 @@ function formatDate(date) {
 
     <!-- Reviews Table -->
     <section class="reviews-table-section" v-if="productState.product">
-      <div class="reviews-table-wrap" v-if="reviews.length">
-        <table class="reviews-table">
+      <div class="reviews-table-wrap overflow-x-auto" v-if="reviews.length">
+        <table class="reviews-table min-w-[640px]">
           <thead>
             <tr>
               <th class="col-num">#</th>
@@ -532,9 +532,28 @@ function formatDate(date) {
   .col-comment {
     display: none;
   }
+  .col-user {
+    width: auto;
+    min-width: 140px;
+  }
+  .col-rating {
+    width: auto;
+  }
+  .col-date {
+    width: auto;
+  }
   .reviews-table th,
   .reviews-table td {
-    padding: 12px 14px;
+    padding: 10px 12px;
+  }
+  .detail__image {
+    height: 280px;
+  }
+  .detail__media {
+    padding: 12px;
+  }
+  .detail__content {
+    padding: 20px;
   }
 }
 </style>

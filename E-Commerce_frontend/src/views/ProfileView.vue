@@ -1070,6 +1070,8 @@ onMounted(async () => {
   .profile-bar__actions {
     order: 1;
     min-width: unset;
+    width: 100%;
+    justify-content: center;
   }
 
   .content-layout {
@@ -1087,6 +1089,38 @@ onMounted(async () => {
 
   .tabs {
     width: max-content;
+  }
+}
+
+@media (max-width: 640px) {
+  .cover-banner {
+    height: 120px;
+  }
+
+  .profile-bar__stats {
+    gap: 16px;
+  }
+
+  .profile-name {
+    font-size: 1rem;
+  }
+
+  .avatar-frame {
+    width: 72px;
+    height: 72px;
+  }
+
+  .profile-bar {
+    padding: 0 12px 16px;
+  }
+
+  .composer-actions {
+    flex-wrap: wrap;
+  }
+
+  .edit-avatar-row {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>
