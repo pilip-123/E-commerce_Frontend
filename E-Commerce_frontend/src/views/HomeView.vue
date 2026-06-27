@@ -35,6 +35,7 @@ async function handleAddToWishlist(product) {
     return;
   }
   await addToWishlist(product.id);
+  router.push({ name: 'wishlist' });
 }
 </script>
 

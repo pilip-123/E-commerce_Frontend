@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive } from 'vue';
+import { computed, onMounted, onUnmounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/api/axios';
 import { addToCart } from '@/stores/cart';
@@ -42,6 +42,7 @@ async function handleAddToWishlist(product) {
     return;
   }
   await addToWishlist(product.id);
+  router.push({ name: 'wishlist' });
 }
 
 function goToProduct(product) {
@@ -64,7 +65,16 @@ function daysRemaining(endDate) {
 const totalPromotions = computed(() => state.promotions.length);
 const totalProducts = computed(() => state.promotions.reduce((sum, p) => sum + (p.products?.length ?? 0), 0));
 
-onMounted(fetchActivePromotions);
+let refreshTimer;
+
+onMounted(() => {
+  fetchActivePromotions();
+  refreshTimer = setInterval(fetchActivePromotions, 30000);
+});
+
+onUnmounted(() => {
+  clearInterval(refreshTimer);
+});
 </script>
 
 <template>
@@ -331,22 +341,16 @@ onMounted(fetchActivePromotions);
 .promo-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 20px;
 }
 
-@media (max-width: 1100px) {
-  .promo-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 820px) {
+@media (max-width: 1199px) {
   .promo-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 767px) {
   .promo-grid {
     grid-template-columns: 1fr;
   }

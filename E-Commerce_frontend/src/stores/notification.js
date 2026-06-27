@@ -52,7 +52,7 @@ export async function markAllAsRead() {
   }
 }
 
-export function startPolling(interval = 30000) {
+export function startPolling(interval = 15000) {
   stopPolling();
   fetchNotifications();
   pollTimer = setInterval(fetchNotifications, interval);

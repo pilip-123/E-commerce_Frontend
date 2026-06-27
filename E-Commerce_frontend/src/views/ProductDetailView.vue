@@ -91,6 +91,7 @@ async function handleAddToWishlist() {
     return;
   }
   await addToWishlist(productState.product.id);
+  router.push({ name: 'wishlist' });
 }
 
 function formatDate(date) {

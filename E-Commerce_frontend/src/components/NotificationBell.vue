@@ -53,11 +53,14 @@ function iconSvg(type) {
   if (i.includes('megaphone') || i.includes('announce') || i.includes('announcement')) {
     return '<path d="M21 6v12"/><path d="M16 7v10a1 1 0 0 0 1 1h4V6h-4a1 1 0 0 0-1 1z"/><path d="M5 8h6l4-2v12l-4-2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z"/>';
   }
+  if (i.includes('percent') || i.includes('tag') || i.includes('promo')) {
+    return '<circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6"/><path d="M9 9h.01"/><path d="M15 15h.01"/>';
+  }
   return '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
 }
 
 onMounted(() => {
-  startPolling(30000);
+  startPolling();
   document.addEventListener('click', onClickOutside);
 });
 

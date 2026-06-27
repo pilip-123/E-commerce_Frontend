@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive } from 'vue';
+import { computed, onMounted, onUnmounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import ProductCard from '@/components/ProductCard.vue';
 import { addToCart } from '@/stores/cart';
@@ -57,10 +57,18 @@ async function handleAddToWishlist(product) {
     return;
   }
   await addToWishlist(product.id);
+  router.push({ name: 'wishlist' });
 }
+
+let refreshTimer;
 
 onMounted(async () => {
   await loadCatalog();
+  refreshTimer = setInterval(loadProducts, 30000);
+});
+
+onUnmounted(() => {
+  clearInterval(refreshTimer);
 });
 </script>
 

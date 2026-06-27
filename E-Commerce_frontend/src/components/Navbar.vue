@@ -59,6 +59,7 @@ async function handleLogout() {
           <RouterLink to="/cart" class="nav__link" @click="mobileOpen = false">Cart</RouterLink>
           <RouterLink to="/wishlist" class="nav__link" @click="mobileOpen = false">Wishlist</RouterLink>
           <RouterLink to="/orders" class="nav__link" @click="mobileOpen = false">Orders</RouterLink>
+          <RouterLink v-if="auth.user?.role === 'admin'" to="/admin/promotions" class="nav__link nav__link--admin" @click="mobileOpen = false">Manage Promos</RouterLink>
         </div>
       </nav>
 
