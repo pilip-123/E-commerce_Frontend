@@ -104,89 +104,32 @@ const outOfStock = computed(() => !props.product?.stock || props.product.stock <
 
 .price-old {
   color: #9ca3af;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
+  margin-right: 4px;
 }
 
 .price-new {
   color: #dc2626;
-  font-size: 1.05rem;
+  font-size: 1rem;
+}
+
+.price-regular {
+  color: var(--accent);
+  font-size: 1rem;
 }
 
 .price-save {
+  background: rgba(220, 38, 38, 0.10);
+  color: #dc2626;
   font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #16a34a;
-  background: rgba(22, 163, 74, 0.1);
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 2px 7px;
+  border-radius: 999px;
 }
 
 .stock-info {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
+  font-weight: 600;
   color: #9ca3af;
-  margin-left: auto;
-}
-
-.product-card--oos {
-  opacity: 0.5;
-}
-
-.product-card--oos .product-card__image img {
-  filter: grayscale(1);
-}
-
-.product-card--oos .product-card__title,
-.product-card--oos .product-card__category,
-.product-card--oos .product-card__text {
-  color: #94a3b8;
-}
-
-.product-card--oos .price-new,
-.product-card--oos .price-regular {
-  color: #94a3b8;
-}
-
-.product-card--oos .product-card__badge {
-  display: none;
-}
-
-.product-card--oos .button,
-.product-card--oos .button--secondary,
-.product-card--oos .button--ghost {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-@media (max-width: 640px) {
-  .product-card__body {
-    padding: 14px;
-  }
-
-  .product-card__title {
-    font-size: 1rem;
-  }
-
-  .product-card__text {
-    font-size: 0.85rem;
-    min-height: 0;
-  }
-
-  .product-card__actions {
-    flex-direction: column;
-  }
-
-  .product-card__actions .button {
-    justify-content: center;
-  }
-
-  .product-card__meta {
-    margin-top: 12px;
-  }
-
-  .price-new {
-    font-size: 0.95rem;
-  }
 }
 </style>

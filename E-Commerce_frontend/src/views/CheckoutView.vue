@@ -92,8 +92,8 @@ async function handleSubmit() {
         <h2>Shipping</h2>
 
         <form class="auth-form" @submit.prevent="confirmOrder">
-          <input v-model="form.phone" class="input" type="text" placeholder="Phone" required>
-          <textarea v-model="form.shipping_address" class="textarea" rows="4" placeholder="Shipping address" required></textarea>
+          <input v-model="form.phone" class="input" type="text" placeholder="Phone">
+          <textarea v-model="form.shipping_address" class="textarea" rows="4" placeholder="Shipping address"></textarea>
           <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
           <button class="button w-full" type="submit" :disabled="submitting">
             {{ submitting ? 'Processing...' : 'Place order' }}

@@ -1,8 +1,16 @@
 import { reactive } from 'vue';
 import api from '@/api/axios';
 
+function restoreUser() {
+  try {
+    return JSON.parse(localStorage.getItem('ecommerce_user'));
+  } catch {
+    return null;
+  }
+}
+
 const state = reactive({
-  user: null,
+  user: restoreUser(),
   token: localStorage.getItem('ecommerce_token') ?? '',
   ready: false,
 });

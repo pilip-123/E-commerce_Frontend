@@ -13,11 +13,13 @@ const auth = useAuth();
 
 const topProducts = computed(() => productState.products.slice(0, 3));
 
-onMounted(async () => {
-  await Promise.all([
-    fetchCategories(),
-    fetchProducts({ per_page: 3, status: 1 }),
-  ]);
+onMounted(() => {
+  if (!productState.categories.length) {
+    fetchCategories();
+  }
+  if (!productState.products.length) {
+    fetchProducts({ per_page: 3, status: 1 });
+  }
 });
 
 async function handleAddToCart(product) {
@@ -103,6 +105,7 @@ async function handleAddToWishlist(product) {
       </div>
 
       <div v-if="productState.loading" class="empty-state">
+        <div class="spinner" />
         <p>Loading products...</p>
       </div>
 
