@@ -23,11 +23,30 @@ function loadDiscount() {
 }
 
 const discount = ref(loadDiscount());
+const hasProfile = ref(false);
 
 const form = reactive({
-  phone: auth.user?.phone ?? '',
-  shipping_address: auth.user?.address ?? '',
+  name: '',
+  phone: '',
+  shipping_address: '',
 });
+
+async function loadProfile() {
+  try {
+    const { data } = await api.get('/profile');
+    const user = data.user;
+    form.name = user.name ?? auth.user?.name ?? '';
+    form.phone = user.phone ?? auth.user?.phone ?? '';
+    form.shipping_address = user.address ?? auth.user?.address ?? '';
+    auth.user = user;
+    hasProfile.value = !!(form.phone && form.shipping_address);
+  } catch {
+    form.name = auth.user?.name ?? '';
+    form.phone = auth.user?.phone ?? '';
+    form.shipping_address = auth.user?.address ?? '';
+    hasProfile.value = false;
+  }
+}
 
 const total = computed(() => formatCurrency(cartState.total));
 
@@ -54,6 +73,7 @@ const totalSavings = computed(() => {
 });
 
 onMounted(async () => {
+  await loadProfile();
   await fetchCart();
 });
 
@@ -92,10 +112,27 @@ async function handleSubmit() {
         <h2>Shipping</h2>
 
         <form class="auth-form" @submit.prevent="confirmOrder">
-          <input v-model="form.phone" class="input" type="text" placeholder="Phone">
-          <textarea v-model="form.shipping_address" class="textarea" rows="4" placeholder="Shipping address"></textarea>
+          <template v-if="hasProfile">
+            <div class="info-display">
+              <div class="info-row">
+                <span class="info-label">Phone</span>
+                <span class="info-value">{{ form.phone }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Address</span>
+                <span class="info-value">{{ form.shipping_address }}</span>
+              </div>
+            </div>
+            <input v-model="form.phone" type="hidden">
+            <input v-model="form.shipping_address" type="hidden">
+          </template>
+          <template v-else>
+            <p class="text-muted small mb-2" style="color: #dc2626;">Please fill in your shipping details to continue.</p>
+            <input v-model="form.phone" class="input" type="text" placeholder="Phone number" required>
+            <textarea v-model="form.shipping_address" class="textarea" rows="3" placeholder="Shipping address" required></textarea>
+          </template>
           <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
-          <button class="button w-full" type="submit" :disabled="submitting">
+          <button class="button w-full" type="submit" :disabled="submitting || !form.phone || !form.shipping_address">
             {{ submitting ? 'Processing...' : 'Place order' }}
           </button>
         </form>
@@ -163,5 +200,31 @@ async function handleSubmit() {
 
 .summary-line__amount {
   white-space: nowrap;
+}
+
+.info-display {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.info-display .info-row {
+  display: flex;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #374151;
+  min-width: 70px;
+}
+
+.info-value {
+  color: #6b7280;
 }
 </style>

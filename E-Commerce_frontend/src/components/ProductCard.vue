@@ -39,6 +39,7 @@ const outOfStock = computed(() => !props.product?.stock || props.product.stock <
         >
       <div v-else class="product-card__placeholder">No image</div>
       <span v-if="discountLabel" class="product-card__badge">{{ discountLabel }}</span>
+      <span v-if="outOfStock" class="product-card__badge--oos">Out of stock</span>
     </div>
 
     <div class="product-card__body">
@@ -55,14 +56,14 @@ const outOfStock = computed(() => !props.product?.stock || props.product.stock <
           <span class="price-save" v-if="savingsPercent">Save {{ savingsPercent }}%</span>
         </template>
         <strong v-else class="price-regular">{{ formatCurrency(product?.price) }}</strong>
-        <span class="stock-info">{{ product?.stock ?? 0 }} in stock</span>
+        <span class="stock-info" :class="{ 'stock-info--oos': outOfStock }">{{ outOfStock ? 'Out of stock' : product?.stock + ' in stock' }}</span>
       </div>
 
       <div class="product-card__actions">
         <RouterLink class="button button--ghost w-full sm:w-auto" :to="{ name: 'product-detail', params: { id: product?.id } }">
           View
         </RouterLink>
-        <button class="button w-full sm:w-auto" type="button" @click="emit('add-to-cart', product)">Cart</button>
+        <button class="button w-full sm:w-auto" type="button" :disabled="outOfStock" @click="emit('add-to-cart', product)" :style="outOfStock ? 'background:#94a3b8;cursor:not-allowed;opacity:0.5;' : ''">Cart</button>
         <button class="button button--secondary w-full sm:w-auto" type="button" @click="emit('add-to-wishlist', product)">
           Save
         </button>
@@ -76,6 +77,23 @@ const outOfStock = computed(() => !props.product?.stock || props.product.stock <
 </template>
 
 <style scoped>
+.product-card {
+  position: relative;
+}
+
+.product-card--oos {
+  opacity: 0.6;
+}
+
+.product-card--oos .product-card__image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #94a3b8;
+  opacity: 0.15;
+  border-radius: inherit;
+}
+
 .product-card__image {
   position: relative;
 }
@@ -93,6 +111,21 @@ const outOfStock = computed(() => !props.product?.stock || props.product.stock <
   line-height: 1;
   letter-spacing: 0.02em;
   box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);
+}
+
+.product-card__badge--oos {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #64748b;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 6px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  z-index: 1;
 }
 
 .product-card__meta {
@@ -130,6 +163,11 @@ const outOfStock = computed(() => !props.product?.stock || props.product.stock <
 .stock-info {
   font-size: 0.72rem;
   font-weight: 600;
-  color: #9ca3af;
+  color: #15803d;
+}
+
+.stock-info--oos {
+  color: #dc2626;
+  font-weight: 700;
 }
 </style>
