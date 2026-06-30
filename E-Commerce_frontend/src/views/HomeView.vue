@@ -6,6 +6,7 @@ import { fetchCategories, fetchProducts, useProduct } from '@/stores/product';
 import { addToCart } from '@/stores/cart';
 import { addToWishlist } from '@/stores/wishlist';
 import { useAuth } from '@/stores/auth';
+import WelcomeBanner from '@/components/WelcomeBanner.vue';
 
 const router = useRouter();
 const productState = useProduct();
@@ -43,6 +44,8 @@ async function handleAddToWishlist(product) {
 
 <template>
   <div class="page">
+    <WelcomeBanner />
+
     <!-- Hero -->
     <section class="hero-section">
       <div class="hero-section__content">
