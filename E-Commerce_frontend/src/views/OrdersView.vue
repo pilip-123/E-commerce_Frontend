@@ -3,9 +3,13 @@ import { computed, onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import api from '@/api/axios';
 import { formatCurrency } from '@/utils/format';
+import RateOrderModal from '@/components/RateOrderModal.vue';
 
 const orders = ref([]);
 const loading = ref(false);
+const rateOrder = ref(null);
+const showRateModal = ref(false);
+const ratedOrderIds = ref(new Set());
 
 const statusConfig = {
   pending:    { bg: '#fef3c7', color: '#92400e', dot: '#f59e0b', label: 'Pending' },
@@ -28,9 +32,37 @@ async function loadOrders() {
   try {
     const { data } = await api.get('/orders');
     orders.value = data.data;
+    checkPendingRatings();
   } finally {
     loading.value = false;
   }
+}
+
+function checkPendingRatings() {
+  for (const order of orders.value) {
+    if (order.status !== 'delivered') continue;
+    if (ratedOrderIds.value.has(order.id)) continue;
+
+    const hasUnrated = order.items?.some(item => !item.hasReviewed);
+    if (hasUnrated) {
+      rateOrder.value = order;
+      showRateModal.value = true;
+      return;
+    }
+  }
+}
+
+function onRateSubmitted() {
+  ratedOrderIds.value.add(rateOrder.value?.id);
+  showRateModal.value = false;
+  rateOrder.value = null;
+  checkPendingRatings();
+}
+
+function onRateClosed() {
+  ratedOrderIds.value.add(rateOrder.value?.id);
+  showRateModal.value = false;
+  rateOrder.value = null;
 }
 
 function formatDate(date) {
@@ -146,6 +178,12 @@ onMounted(loadOrders);
         </div>
       </template>
     </section>
+    <RateOrderModal
+      :show="showRateModal"
+      :order="rateOrder"
+      @submitted="onRateSubmitted"
+      @close="onRateClosed"
+    />
   </div>
 </template>
 
