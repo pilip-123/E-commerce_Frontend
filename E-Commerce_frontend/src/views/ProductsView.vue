@@ -108,8 +108,16 @@ onUnmounted(() => {
           <input v-model="filters.max_price" class="input" type="number" step="0.01" placeholder="Max price">
         </div>
         <div class="filters-form__actions flex-col sm:flex-row">
-          <button class="button w-full sm:w-auto" type="submit">Search</button>
-          <button v-if="hasFilters" class="button button--ghost w-full sm:w-auto" type="button" @click="handleReset">Clear</button>
+          <button class="btn-icon-filter btn-icon-filter--search" type="submit" title="Search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
+          <button v-if="hasFilters" class="btn-icon-filter btn-icon-filter--clear" type="button" @click="handleReset" title="Clear filters">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
       </form>
     </section>
@@ -231,6 +239,39 @@ onUnmounted(() => {
 .filters-form__actions {
   display: flex;
   gap: 8px;
+}
+
+.btn-icon-filter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn-icon-filter--search {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+}
+
+.btn-icon-filter--search:hover {
+  opacity: 0.9;
+}
+
+.btn-icon-filter--clear {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.btn-icon-filter--clear:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* ─── Status ─── */

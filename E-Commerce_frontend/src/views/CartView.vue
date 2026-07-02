@@ -209,14 +209,23 @@ function removeDiscount() {
             class="input flex-1"
             @keyup.enter="applyDiscount"
           >
-          <button class="button button--sm" type="button" :disabled="applyingDiscount || !discountCode.trim()" @click="applyDiscount">
-            {{ applyingDiscount ? '...' : 'Apply' }}
+          <button class="discount-apply-btn" type="button" :disabled="applyingDiscount || !discountCode.trim()" @click="applyDiscount" title="Apply discount">
+            <svg v-if="applyingDiscount" class="animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+            </svg>
+            <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
           </button>
         </div>
         <div v-else class="flex items-center gap-2 rounded-lg px-3 py-2" style="background: #f0fdf4;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
           <span class="text-sm font-semibold flex-1" style="color: #065f46;">{{ discountApplied.code }}</span>
-          <button class="text-xs font-semibold" style="color: #dc2626;" type="button" @click="removeDiscount">Remove</button>
+          <button class="discount-remove-btn" type="button" @click="removeDiscount" title="Remove discount">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
         <p v-if="discountError" class="text-xs mt-1" style="color: #dc2626;">{{ discountError }}</p>
       </div>
@@ -271,12 +280,11 @@ function removeDiscount() {
               <strong class="cart-promo-card__new">{{ formatCurrency(product.discount_price) }}</strong>
             </div>
             <div class="cart-promo-card__actions">
-              <button class="cart-promo-card__cart" type="button" :disabled="!product.stock || product.stock < 1" @click.stop="handleAddToCart(product)">
+              <button class="cart-promo-card__cart" type="button" :disabled="!product.stock || product.stock < 1" @click.stop="handleAddToCart(product)" title="Add to cart">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                   <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
                   <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                 </svg>
-                Cart
               </button>
             </div>
           </div>
@@ -413,6 +421,47 @@ function removeDiscount() {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+}
+
+.discount-apply-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.discount-apply-btn:hover {
+  opacity: 0.9;
+}
+
+.discount-apply-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.discount-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #dc2626;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.discount-remove-btn:hover {
+  background: rgba(220, 38, 38, 0.08);
 }
 
 .cart-promo-card--oos {

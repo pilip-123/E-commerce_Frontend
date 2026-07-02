@@ -176,7 +176,9 @@ onMounted(async () => {
         <RouterLink class="action-btn" to="/wishlist" title="Wishlist">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
         </RouterLink>
-        <button class="btn-primary" type="button" @click="activeTab = 'edit'">Edit Profile</button>
+        <button class="action-btn-primary" type="button" @click="activeTab = 'edit'" title="Edit Profile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </button>
       </div>
     </div>
 
@@ -352,9 +354,13 @@ onMounted(async () => {
                   <div v-else class="edit-avatar-placeholder">{{ initials }}</div>
                   <div class="edit-avatar-overlay">Change</div>
                 </div>
-                <div>
-                  <button class="btn-ghost btn-small" type="button" @click="openImagePicker">Upload photo</button>
-                  <button v-if="avatarPreview || avatarUrl" class="btn-ghost btn-small text-danger" type="button" @click="removeImage">Remove</button>
+                <div class="edit-avatar-btns">
+                  <button class="avatar-icon-btn" type="button" @click="openImagePicker" title="Upload photo">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </button>
+                  <button v-if="avatarPreview || avatarUrl" class="avatar-icon-btn avatar-icon-btn--remove" type="button" @click="removeImage" title="Remove photo">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
                 </div>
               </div>
 
@@ -384,7 +390,9 @@ onMounted(async () => {
                 <button class="btn-primary" type="submit" :disabled="saving">
                   {{ saving ? 'Saving...' : 'Save Changes' }}
                 </button>
-                <button class="btn-ghost" type="button" @click="activeTab = 'profile'">Cancel</button>
+                <button class="btn-ghost" type="button" @click="activeTab = 'profile'" title="Cancel">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
               </div>
             </form>
           </div>
@@ -968,6 +976,57 @@ onMounted(async () => {
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.action-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.action-btn-primary:hover {
+  opacity: 0.92;
+}
+
+.edit-avatar-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.avatar-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--accent);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.avatar-icon-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.avatar-icon-btn--remove {
+  color: #dc2626;
+}
+
+.avatar-icon-btn--remove:hover {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: #dc2626;
 }
 
 .btn-small {

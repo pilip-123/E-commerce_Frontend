@@ -135,9 +135,22 @@ function formatDate(date) {
         </div>
 
         <div class="detail__actions">
-          <button class="button w-full sm:w-auto" type="button" :disabled="outOfStock" @click="handleAddToCart">Cart</button>
-          <button class="button button--secondary w-full sm:w-auto" type="button" @click="handleAddToWishlist">Save</button>
-          <button class="button button--ghost w-full sm:w-auto" type="button" @click="router.back()">Back</button>
+          <button class="btn-icon-detail btn-icon-detail--cart" type="button" :disabled="outOfStock" @click="handleAddToCart" title="Add to cart">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+              <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+          </button>
+          <button class="btn-icon-detail btn-icon-detail--wish" type="button" @click="handleAddToWishlist" title="Save to wishlist">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </button>
+          <button class="btn-icon-detail btn-icon-detail--back" type="button" @click="router.back()" title="Go back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+              <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
+            </svg>
+          </button>
         </div>
       </div>
     </section>
@@ -555,5 +568,55 @@ function formatDate(date) {
   .detail__content {
     padding: 20px;
   }
+}
+
+.btn-icon-detail {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.btn-icon-detail:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-icon-detail:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-icon-detail--cart {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  border-color: transparent;
+}
+
+.btn-icon-detail--cart:hover {
+  opacity: 0.9;
+  color: #fff;
+  border-color: transparent;
+}
+
+.btn-icon-detail--wish:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+.btn-icon-detail--back:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 </style>

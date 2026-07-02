@@ -87,7 +87,11 @@ onUnmounted(() => {
             <span class="notif__head-title">Notifications</span>
             <span v-if="notifications.unreadCount" class="notif__head-count">{{ notifications.unreadCount }} new</span>
           </div>
-          <button v-if="notifications.unreadCount" class="notif__mark-all" type="button" @click="onMarkAll">Mark all read</button>
+          <button v-if="notifications.unreadCount" class="notif__mark-all" type="button" @click="onMarkAll" title="Mark all as read">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </button>
         </div>
 
         <div class="notif__list">
@@ -215,19 +219,26 @@ onUnmounted(() => {
 }
 
 .notif__mark-all {
-  font-size: 0.75rem;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
   color: var(--accent);
   background: none;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 999px;
-  transition: background 0.15s;
+  border-radius: 8px;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .notif__mark-all:hover {
   background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.notif__mark-all svg {
+  flex: none;
 }
 
 .notif__list {

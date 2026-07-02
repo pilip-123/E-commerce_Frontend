@@ -139,12 +139,11 @@ onUnmounted(() => {
                 <strong class="deal-card__new">{{ formatCurrency(product.discount_price) }}</strong>
               </div>
               <div class="deal-card__actions">
-                <button class="deal-card__cart" type="button" :disabled="!product.stock || product.stock < 1" @click.stop="handleAddToCart(product)">
+                <button class="deal-card__cart" type="button" :disabled="!product.stock || product.stock < 1" @click.stop="handleAddToCart(product)" title="Add to cart">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                     <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                   </svg>
-                  Cart
                 </button>
                 <button class="deal-card__wish min-w-[44px] min-h-[44px]" type="button" @click.stop="handleAddToWishlist(product)" title="Save">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
