@@ -7,6 +7,7 @@ import logoUrl from '@/assets/logo.png';
 
 const router = useRouter();
 const errorMessage = ref('');
+const isLoading = ref(false);
 
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
@@ -20,14 +21,66 @@ const form = reactive({
   password_confirmation: '',
 });
 
+const errors = reactive({
+  name: '',
+  email: '',
+  phone: '',
+  address: '',
+  password: '',
+  password_confirmation: '',
+});
+
+function validateForm() {
+  let valid = true;
+  errors.name = '';
+  errors.email = '';
+  errors.phone = '';
+  errors.address = '';
+  errors.password = '';
+  errors.password_confirmation = '';
+
+  if (!form.name) {
+    errors.name = 'Name is required';
+    valid = false;
+  }
+
+  if (!form.email) {
+    errors.email = 'Email is required';
+    valid = false;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    errors.email = 'Please enter a valid email';
+    valid = false;
+  }
+
+  if (!form.password) {
+    errors.password = 'Password is required';
+    valid = false;
+  } else if (form.password.length < 6) {
+    errors.password = 'Password must be at least 6 characters';
+    valid = false;
+  }
+
+  if (form.password !== form.password_confirmation) {
+    errors.password_confirmation = 'Passwords do not match';
+    valid = false;
+  }
+
+  return valid;
+}
+
 async function handleSubmit() {
   errorMessage.value = '';
+  if (!validateForm()) return;
+
+  isLoading.value = true;
 
   try {
     await register(form);
     await router.push({ name: 'home' });
   } catch (error) {
     errorMessage.value = error.response?.data?.message ?? 'Unable to register.';
+  } finally {
+    isLoading.value = false;
   }
 }
 
@@ -42,351 +95,264 @@ async function socialLogin(provider) {
 </script>
 
 <template>
-  <section class="auth-page">
-    <div class="auth-card">
-      <div class="auth-card__logo">
-        <img :src="logoUrl" alt="E-Commerce" class="auth-logo">
-      </div>
-      <p class="auth-card__eyebrow">Create account</p>
-      <h1 class="auth-card__title">Register</h1>
-      <p class="auth-card__desc">Customer access is created automatically.</p>
+  <div class="min-h-screen bg-[#55C3E6] flex items-center justify-center p-4 sm:p-6 lg:p-8 font-['Poppins']">
+    <!-- Decorative circles -->
+    <div class="fixed top-0 left-0 w-[500px] h-[500px] rounded-full bg-white/10 -translate-x-1/4 -translate-y-1/4 pointer-events-none"></div>
+    <div class="fixed bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-white/[0.07] translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+    <div class="fixed top-1/3 right-0 w-[300px] h-[300px] rounded-full bg-white/[0.05] translate-x-1/2 pointer-events-none"></div>
+    <div class="fixed bottom-1/4 left-0 w-[250px] h-[250px] rounded-full bg-white/[0.06] -translate-x-1/2 pointer-events-none"></div>
 
-      <form class="auth-form" @submit.prevent="handleSubmit">
-        <div class="auth-field">
-          <label class="auth-label">Full name</label>
-          <input v-model="form.name" class="auth-input" type="text" placeholder="Full name" required>
+    <!-- Main card -->
+    <div class="w-full max-w-[1200px] bg-white rounded-[20px] shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 animate-slideUp">
+      <!-- Left Column -->
+      <div class="relative bg-gradient-to-br from-[#E0F2FE] to-[#F0F9FF] p-8 lg:p-12 xl:p-16 flex flex-col min-h-[500px] lg:min-h-[700px]">
+        <!-- Logo -->
+        <div class="flex-shrink-0">
+          <img :src="logoUrl" alt="Logo" class="h-20 w-20 rounded-full object-cover border-[4px] border-white shadow-lg">
         </div>
-        <div class="auth-field">
-          <label class="auth-label">Email</label>
-          <input v-model="form.email" class="auth-input" type="email" placeholder="Email address" required>
-        </div>
-        <div class="auth-row">
-          <div class="auth-field">
-            <label class="auth-label">Phone</label>
-            <input v-model="form.phone" class="auth-input" type="text" placeholder="Phone number">
-          </div>
-          <div class="auth-field">
-            <label class="auth-label">Address</label>
-            <input v-model="form.address" class="auth-input" type="text" placeholder="Address">
-          </div>
-        </div>
-        <div class="auth-field">
-          <label class="auth-label">Password</label>
-          <div class="auth-input-wrap">
-            <input v-model="form.password" class="auth-input" :type="showPassword ? 'text' : 'password'" placeholder="Password" required>
-            <button type="button" class="auth-pwd-toggle" @click="showPassword = !showPassword" tabindex="-1" :aria-label="showPassword ? 'Hide password' : 'Show password'">
-              <svg v-if="showPassword" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-              <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-        </div>
-        <div class="auth-field">
-          <label class="auth-label">Confirm password</label>
-          <div class="auth-input-wrap">
-            <input v-model="form.password_confirmation" class="auth-input" :type="showConfirmPassword ? 'text' : 'password'" placeholder="Confirm password" required>
-            <button type="button" class="auth-pwd-toggle" @click="showConfirmPassword = !showConfirmPassword" tabindex="-1" :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'">
-              <svg v-if="showConfirmPassword" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-              <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-        </div>
-        <p v-if="errorMessage" class="auth-error">{{ errorMessage }}</p>
-        <button class="auth-btn" type="submit">Create account</button>
-      </form>
 
-      <div class="auth-divider">
-        <span class="auth-divider__line"></span>
-        <span class="auth-divider__text">Or continue with</span>
-        <span class="auth-divider__line"></span>
-      </div>
-
-      <div class="auth-social">
-        <button type="button" class="auth-social__btn" @click="socialLogin('google')">
-          <svg class="auth-social__icon" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        <!-- Illustration -->
+        <div class="flex-1 flex items-center justify-center py-6">
+          <svg viewBox="0 0 400 400" class="w-full max-w-[320px] h-auto">
+            <defs>
+              <linearGradient id="blueGradR" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#38BDF8" />
+                <stop offset="100%" stop-color="#0284C7" />
+              </linearGradient>
+              <linearGradient id="shieldGradR" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#38BDF8" />
+                <stop offset="100%" stop-color="#0EA5E9" />
+              </linearGradient>
+            </defs>
+            <circle cx="200" cy="200" r="170" fill="url(#blueGradR)" opacity="0.08" />
+            <circle cx="200" cy="200" r="130" fill="url(#blueGradR)" opacity="0.12" />
+            <circle cx="200" cy="200" r="90" fill="url(#blueGradR)" opacity="0.15" />
+            <path d="M200 85 L290 130 L290 215 C290 280 200 335 200 335 C200 335 110 280 110 215 L110 130 Z"
+              fill="url(#shieldGradR)" opacity="0.9" />
+            <rect x="170" y="200" width="60" height="40" rx="6" fill="white" opacity="0.95" />
+            <path d="M180 200 V185 C180 172 188 165 200 165 C212 165 220 172 220 185 V200"
+              fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.95" />
+            <circle cx="200" cy="218" r="7" fill="#38BDF8" />
+            <path d="M200 225 V233" stroke="#38BDF8" stroke-width="3" stroke-linecap="round" />
+            <circle cx="130" cy="140" r="8" fill="#38BDF8" opacity="0.3" />
+            <circle cx="280" cy="125" r="5" fill="#38BDF8" opacity="0.4" />
+            <circle cx="145" cy="310" r="6" fill="#38BDF8" opacity="0.25" />
+            <circle cx="270" cy="290" r="10" fill="#38BDF8" opacity="0.2" />
+            <circle cx="100" cy="220" r="4" fill="#38BDF8" opacity="0.2" />
+            <circle cx="300" cy="240" r="6" fill="#38BDF8" opacity="0.15" />
+            <circle cx="310" cy="100" r="20" fill="#22C55E" opacity="0.9" />
+            <path d="M302 100 L308 108 L320 93" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
-          Google
-        </button>
-        <button type="button" class="auth-social__btn" @click="socialLogin('facebook')">
-          <svg class="auth-social__icon" viewBox="0 0 24 24" fill="#1877F2">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-          </svg>
-          Facebook
-        </button>
+        </div>
+
+        <!-- Copyright -->
+        <div class="flex-shrink-0 text-center lg:text-left">
+          <p class="text-sm text-gray-400">&copy; 2026 E-Commerce. All rights reserved.</p>
+        </div>
       </div>
 
-      <p class="auth-card__footer">
-        Already have an account? <RouterLink to="/login" class="auth-link">Sign in</RouterLink>
-      </p>
+      <!-- Right Column -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center overflow-y-auto">
+        <!-- Heading -->
+        <h1 class="text-[#0F172A] text-[36px] lg:text-[44px] font-bold leading-tight">Create Account</h1>
+        <p class="text-gray-400 mt-2 text-lg">Join us today</p>
+
+        <!-- Form -->
+        <form @submit.prevent="handleSubmit" class="mt-8 space-y-4" novalidate>
+          <!-- Name -->
+          <div>
+            <div class="relative group">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#38BDF8] transition-colors duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </span>
+              <input v-model="form.name" type="text" placeholder="Full name"
+                class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/10 bg-white text-[15px]"
+                @input="errors.name = ''">
+            </div>
+            <p v-if="errors.name" class="mt-1 text-sm text-red-500 font-medium">{{ errors.name }}</p>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <div class="relative group">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#38BDF8] transition-colors duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <path d="M22 4L12 13 2 4" />
+                </svg>
+              </span>
+              <input v-model="form.email" type="email" placeholder="Email address"
+                class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/10 bg-white text-[15px]"
+                @input="errors.email = ''">
+            </div>
+            <p v-if="errors.email" class="mt-1 text-sm text-red-500 font-medium">{{ errors.email }}</p>
+          </div>
+
+          <!-- Phone & Address -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <div class="relative group">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#38BDF8] transition-colors duration-300">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                </span>
+                <input v-model="form.phone" type="text" placeholder="Phone number"
+                  class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/10 bg-white text-[15px]"
+                  @input="errors.phone = ''">
+              </div>
+              <p v-if="errors.phone" class="mt-1 text-sm text-red-500 font-medium">{{ errors.phone }}</p>
+            </div>
+            <div>
+              <div class="relative group">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#38BDF8] transition-colors duration-300">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                </span>
+                <input v-model="form.address" type="text" placeholder="Address"
+                  class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/10 bg-white text-[15px]"
+                  @input="errors.address = ''">
+              </div>
+              <p v-if="errors.address" class="mt-1 text-sm text-red-500 font-medium">{{ errors.address }}</p>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div>
+            <div class="relative group">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#38BDF8] transition-colors duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </span>
+              <input v-model="form.password" :type="showPassword ? 'text' : 'password'" placeholder="Password"
+                class="w-full h-[50px] pl-12 pr-12 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/10 bg-white text-[15px]"
+                @input="errors.password = ''">
+              <button type="button" @click="showPassword = !showPassword"
+                class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition-colors duration-300"
+                :aria-label="showPassword ? 'Hide password' : 'Show password'">
+                <svg v-if="showPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+                <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+            </div>
+            <p v-if="errors.password" class="mt-1 text-sm text-red-500 font-medium">{{ errors.password }}</p>
+          </div>
+
+          <!-- Confirm Password -->
+          <div>
+            <div class="relative group">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#38BDF8] transition-colors duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </span>
+              <input v-model="form.password_confirmation" :type="showConfirmPassword ? 'text' : 'password'" placeholder="Confirm password"
+                class="w-full h-[50px] pl-12 pr-12 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/10 bg-white text-[15px]">
+              <button type="button" @click="showConfirmPassword = !showConfirmPassword"
+                class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition-colors duration-300"
+                :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'">
+                <svg v-if="showConfirmPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+                <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+            </div>
+            <p v-if="errors.password_confirmation" class="mt-1 text-sm text-red-500 font-medium">{{ errors.password_confirmation }}</p>
+          </div>
+
+          <!-- Global error -->
+          <p v-if="errorMessage" class="p-3 bg-red-50 border border-red-200 rounded-[10px] text-sm text-red-600 font-medium text-center">{{ errorMessage }}</p>
+
+          <!-- Submit -->
+          <button type="submit" :disabled="isLoading"
+            class="w-full h-[52px] bg-[#38BDF8] hover:bg-[#0EA5E9] rounded-[14px] text-white font-semibold text-[15px] tracking-wide shadow-[0_4px_20px_-4px_rgba(56,189,248,0.4)] transition-all duration-300 hover:shadow-[0_8px_30px_-4px_rgba(56,189,248,0.5)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_2px_10px_-4px_rgba(56,189,248,0.4)] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_20px_-4px_rgba(56,189,248,0.4)] flex items-center justify-center gap-2">
+            <svg v-if="isLoading" class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            <template v-else>
+              <span>Create Account</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </template>
+          </button>
+        </form>
+
+        <!-- Social login -->
+        <div class="mt-6 flex items-center gap-3">
+          <span class="flex-1 h-px bg-gray-200"></span>
+          <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Or continue with</span>
+          <span class="flex-1 h-px bg-gray-200"></span>
+        </div>
+        <div class="mt-4 grid grid-cols-2 gap-3">
+          <button type="button" @click="socialLogin('google')"
+            class="flex items-center justify-center gap-3 h-[50px] border border-gray-200 rounded-[14px] text-sm font-semibold text-[#1E293B] bg-white hover:bg-gray-50 hover:shadow-md transition-all duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Google
+          </button>
+          <button type="button" @click="socialLogin('facebook')"
+            class="flex items-center justify-center gap-3 h-[50px] border border-gray-200 rounded-[14px] text-sm font-semibold text-[#1E293B] bg-white hover:bg-gray-50 hover:shadow-md transition-all duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            Facebook
+          </button>
+        </div>
+
+        <!-- Login link -->
+        <p class="mt-6 text-center text-sm text-[#64748B]">
+          Already have an account?
+          <RouterLink to="/login" class="font-semibold text-[#38BDF8] hover:text-[#0EA5E9] transition-colors duration-300">Sign in</RouterLink>
+        </p>
+
+        <!-- Bottom links -->
+        <div class="mt-6 pt-5 border-t border-gray-100 flex items-center justify-center gap-4 text-xs text-gray-400">
+          <a href="#" class="hover:text-gray-600 transition-colors duration-300">Terms &amp; Conditions</a>
+          <span class="text-gray-300">|</span>
+          <a href="#" class="hover:text-gray-600 transition-colors duration-300">Privacy Policy</a>
+        </div>
+      </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <style scoped>
-.auth-page {
-  display: grid;
-  place-items: center;
-  min-height: calc(100vh - 64px);
-  min-height: calc(100svh - 64px);
-  padding: 32px 20px;
-}
-
-.auth-card {
-  width: 100%;
-  max-width: 480px;
-  background: #fff;
-  border-radius: 24px;
-  padding: 40px 32px 32px;
-  box-shadow: 0 2px 40px rgba(0, 0, 0, 0.06), 0 1px 8px rgba(0, 0, 0, 0.04);
-  border: 1px solid var(--line);
-  text-align: center;
-}
-
-.auth-card__logo {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.auth-logo {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #fff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.auth-card__eyebrow {
-  margin: 0 0 4px;
-  font-size: 0.78rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: #16a34a;
-  font-weight: 600;
-}
-
-.auth-card__title {
-  margin: 0 0 6px;
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: var(--text);
-}
-
-.auth-card__desc {
-  margin: 0 0 28px;
-  color: var(--muted);
-  font-size: 0.92rem;
-}
-
-.auth-form {
-  display: grid;
-  gap: 16px;
-  text-align: left;
-}
-
-.auth-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-.auth-field {
-  display: grid;
-  gap: 5px;
-}
-
-.auth-label {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.auth-input {
-  width: 100%;
-  padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
-  color: var(--text);
-  font-size: 0.95rem;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  box-sizing: border-box;
-}
-
-.auth-input::placeholder {
-  color: rgba(148, 163, 184, 0.72);
-}
-
-.auth-input:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
-}
-
-.auth-input-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.auth-input-wrap .auth-input {
-  padding-right: 44px;
-}
-
-.auth-pwd-toggle {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  padding: 6px;
-  cursor: pointer;
-  color: #94a3b8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 0;
-  transition: color 0.2s;
-}
-
-.auth-pwd-toggle:hover {
-  color: #64748b;
-}
-
-.auth-error {
-  margin: 0;
-  padding: 12px 14px;
-  border-radius: 10px;
-  background: rgba(239, 68, 68, 0.08);
-  color: #dc2626;
-  font-size: 0.88rem;
-  text-align: center;
-}
-
-.auth-btn {
-  width: 100%;
-  padding: 14px;
-  border: 0;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.auth-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.3);
-}
-
-.auth-btn:active {
-  transform: translateY(0);
-}
-
-.auth-card__footer {
-  margin: 24px 0 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.auth-link {
-  color: #16a34a;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.auth-link:hover {
-  text-decoration: underline;
-}
-
-.auth-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 24px 0 16px;
-}
-
-.auth-divider__line {
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-}
-
-.auth-divider__text {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
-.auth-social {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.auth-social__btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 11px 12px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
-  color: var(--text);
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
-}
-
-.auth-social__btn:hover {
-  background: #f8fafc;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-}
-
-.auth-social__icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-
-@media (max-width: 640px) {
-  .auth-card {
-    padding: 28px 20px 24px;
-    border-radius: 20px;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
-
-  .auth-row {
-    grid-template-columns: 1fr;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
 
-  .auth-social {
-    grid-template-columns: 1fr;
-  }
-
-  .auth-logo {
-    width: 56px;
-    height: 56px;
-  }
-
-  .auth-card__title {
-    font-size: 1.3rem;
-  }
-
-  .auth-page {
-    padding: 20px 16px;
-  }
+.animate-slideUp {
+  animation: slideUp 0.6s ease-out;
 }
 </style>
