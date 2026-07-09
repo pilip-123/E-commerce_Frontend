@@ -1,0 +1,7 @@
+{
+  "rootDirectory": "E-Commerce_frontend",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "nodeVersion": "22.x"
+}
