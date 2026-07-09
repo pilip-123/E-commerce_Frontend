@@ -8,10 +8,12 @@ const email = ref('');
 const isLoading = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
+const resetUrl = ref('');
 
 async function handleSubmit() {
   errorMessage.value = '';
   successMessage.value = '';
+  resetUrl.value = '';
 
   if (!email.value) {
     errorMessage.value = 'Please enter your email address.';
@@ -23,11 +25,18 @@ async function handleSubmit() {
   try {
     const { data } = await api.post('/auth/forgot-password', { email: email.value });
     successMessage.value = data.message;
+    if (data.reset_url) {
+      resetUrl.value = data.reset_url;
+    }
   } catch (error) {
     errorMessage.value = error.response?.data?.message ?? 'Something went wrong. Please try again.';
   } finally {
     isLoading.value = false;
   }
+}
+
+function copyResetUrl() {
+  navigator.clipboard.writeText(resetUrl.value);
 }
 </script>
 
@@ -53,6 +62,15 @@ async function handleSubmit() {
 
         <div v-if="successMessage" class="mt-6 w-full p-4 bg-emerald-50 border border-emerald-200 rounded-[14px] text-sm text-emerald-700 font-medium text-center">
           {{ successMessage }}
+        </div>
+
+        <div v-if="resetUrl" class="mt-3 w-full p-4 bg-blue-50 border border-blue-200 rounded-[14px] text-sm text-blue-700 text-left">
+          <p class="font-semibold mb-2">Debug: Copy this reset link (dev mode)</p>
+          <code class="block text-xs break-all bg-white p-2 rounded border border-blue-100 mb-2 select-all">{{ resetUrl }}</code>
+          <button @click="copyResetUrl" type="button"
+            class="text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+            Copy link
+          </button>
         </div>
 
         <div v-if="errorMessage" class="mt-6 w-full p-4 bg-red-50 border border-red-200 rounded-[14px] text-sm text-red-600 font-medium text-center">
