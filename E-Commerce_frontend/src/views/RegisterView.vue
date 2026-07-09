@@ -95,7 +95,7 @@ async function socialLogin(provider) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#55C3E6] flex items-center justify-center p-4 sm:p-6 lg:p-8 font-['Poppins']">
+  <div class="min-h-screen bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center p-4 sm:p-6 lg:p-8 font-['Poppins']">
     <!-- Decorative circles -->
     <div class="fixed top-0 left-0 w-[500px] h-[500px] rounded-full bg-white/10 -translate-x-1/4 -translate-y-1/4 pointer-events-none"></div>
     <div class="fixed bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-white/[0.07] translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
@@ -105,7 +105,7 @@ async function socialLogin(provider) {
     <!-- Main card -->
     <div class="w-full max-w-[1200px] bg-white rounded-[20px] shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 animate-slideUp">
       <!-- Left Column -->
-      <div class="relative bg-gradient-to-br from-[#E0F2FE] to-[#F0F9FF] p-8 lg:p-12 xl:p-16 flex flex-col min-h-[500px] lg:min-h-[700px]">
+      <div class="relative bg-gradient-to-br from-[#f0fdf4] to-[#dcfce7] p-8 lg:p-12 xl:p-16 flex flex-col min-h-[500px] lg:min-h-[700px]">
         <!-- Logo -->
         <div class="flex-shrink-0">
           <img :src="logoUrl" alt="Logo" class="h-20 w-20 rounded-full object-cover border-[4px] border-white shadow-lg">
@@ -115,32 +115,32 @@ async function socialLogin(provider) {
         <div class="flex-1 flex items-center justify-center py-6">
           <svg viewBox="0 0 400 400" class="w-full max-w-[320px] h-auto">
             <defs>
-              <linearGradient id="blueGradR" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#38BDF8" />
-                <stop offset="100%" stop-color="#0284C7" />
+              <linearGradient id="greenGradR" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#22c55e" />
+                <stop offset="100%" stop-color="#16a34a" />
               </linearGradient>
               <linearGradient id="shieldGradR" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#38BDF8" />
-                <stop offset="100%" stop-color="#0EA5E9" />
+                <stop offset="0%" stop-color="#22c55e" />
+                <stop offset="100%" stop-color="#15803d" />
               </linearGradient>
             </defs>
-            <circle cx="200" cy="200" r="170" fill="url(#blueGradR)" opacity="0.08" />
-            <circle cx="200" cy="200" r="130" fill="url(#blueGradR)" opacity="0.12" />
-            <circle cx="200" cy="200" r="90" fill="url(#blueGradR)" opacity="0.15" />
+            <circle cx="200" cy="200" r="170" fill="url(#greenGradR)" opacity="0.08" />
+            <circle cx="200" cy="200" r="130" fill="url(#greenGradR)" opacity="0.12" />
+            <circle cx="200" cy="200" r="90" fill="url(#greenGradR)" opacity="0.15" />
             <path d="M200 85 L290 130 L290 215 C290 280 200 335 200 335 C200 335 110 280 110 215 L110 130 Z"
               fill="url(#shieldGradR)" opacity="0.9" />
             <rect x="170" y="200" width="60" height="40" rx="6" fill="white" opacity="0.95" />
             <path d="M180 200 V185 C180 172 188 165 200 165 C212 165 220 172 220 185 V200"
               fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.95" />
-            <circle cx="200" cy="218" r="7" fill="#38BDF8" />
-            <path d="M200 225 V233" stroke="#38BDF8" stroke-width="3" stroke-linecap="round" />
-            <circle cx="130" cy="140" r="8" fill="#38BDF8" opacity="0.3" />
-            <circle cx="280" cy="125" r="5" fill="#38BDF8" opacity="0.4" />
-            <circle cx="145" cy="310" r="6" fill="#38BDF8" opacity="0.25" />
-            <circle cx="270" cy="290" r="10" fill="#38BDF8" opacity="0.2" />
-            <circle cx="100" cy="220" r="4" fill="#38BDF8" opacity="0.2" />
-            <circle cx="300" cy="240" r="6" fill="#38BDF8" opacity="0.15" />
-            <circle cx="310" cy="100" r="20" fill="#22C55E" opacity="0.9" />
+            <circle cx="200" cy="218" r="7" fill="#22c55e" />
+            <path d="M200 225 V233" stroke="#22c55e" stroke-width="3" stroke-linecap="round" />
+            <circle cx="130" cy="140" r="8" fill="#22c55e" opacity="0.3" />
+            <circle cx="280" cy="125" r="5" fill="#22c55e" opacity="0.4" />
+            <circle cx="145" cy="310" r="6" fill="#22c55e" opacity="0.25" />
+            <circle cx="270" cy="290" r="10" fill="#22c55e" opacity="0.2" />
+            <circle cx="100" cy="220" r="4" fill="#22c55e" opacity="0.2" />
+            <circle cx="300" cy="240" r="6" fill="#22c55e" opacity="0.15" />
+            <circle cx="310" cy="100" r="20" fill="#22c55e" opacity="0.9" />
             <path d="M302 100 L308 108 L320 93" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </div>
@@ -162,14 +162,14 @@ async function socialLogin(provider) {
           <!-- Name -->
           <div>
             <div class="relative group">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#38BDF8] transition-colors duration-300">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
               </span>
               <input v-model="form.name" type="text" placeholder="Full name"
-                class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/10 bg-white text-[15px]"
+                class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
                 @input="errors.name = ''">
             </div>
             <p v-if="errors.name" class="mt-1 text-sm text-red-500 font-medium">{{ errors.name }}</p>
@@ -178,14 +178,14 @@ async function socialLogin(provider) {
           <!-- Email -->
           <div>
             <div class="relative group">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#38BDF8] transition-colors duration-300">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="4" width="20" height="16" rx="2" />
                   <path d="M22 4L12 13 2 4" />
                 </svg>
               </span>
               <input v-model="form.email" type="email" placeholder="Email address"
-                class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/10 bg-white text-[15px]"
+                class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
                 @input="errors.email = ''">
             </div>
             <p v-if="errors.email" class="mt-1 text-sm text-red-500 font-medium">{{ errors.email }}</p>
@@ -195,27 +195,27 @@ async function socialLogin(provider) {
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <div class="relative group">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#38BDF8] transition-colors duration-300">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                   </svg>
                 </span>
                 <input v-model="form.phone" type="text" placeholder="Phone number"
-                  class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/10 bg-white text-[15px]"
+                  class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
                   @input="errors.phone = ''">
               </div>
               <p v-if="errors.phone" class="mt-1 text-sm text-red-500 font-medium">{{ errors.phone }}</p>
             </div>
             <div>
               <div class="relative group">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#38BDF8] transition-colors duration-300">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                     <circle cx="12" cy="10" r="3" />
                   </svg>
                 </span>
                 <input v-model="form.address" type="text" placeholder="Address"
-                  class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/10 bg-white text-[15px]"
+                  class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
                   @input="errors.address = ''">
               </div>
               <p v-if="errors.address" class="mt-1 text-sm text-red-500 font-medium">{{ errors.address }}</p>
@@ -225,14 +225,14 @@ async function socialLogin(provider) {
           <!-- Password -->
           <div>
             <div class="relative group">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#38BDF8] transition-colors duration-300">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                   <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
               </span>
               <input v-model="form.password" :type="showPassword ? 'text' : 'password'" placeholder="Password"
-                class="w-full h-[50px] pl-12 pr-12 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/10 bg-white text-[15px]"
+                class="w-full h-[50px] pl-12 pr-12 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
                 @input="errors.password = ''">
               <button type="button" @click="showPassword = !showPassword"
                 class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition-colors duration-300"
@@ -253,14 +253,14 @@ async function socialLogin(provider) {
           <!-- Confirm Password -->
           <div>
             <div class="relative group">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#38BDF8] transition-colors duration-300">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                   <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
               </span>
               <input v-model="form.password_confirmation" :type="showConfirmPassword ? 'text' : 'password'" placeholder="Confirm password"
-                class="w-full h-[50px] pl-12 pr-12 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/10 bg-white text-[15px]">
+                class="w-full h-[50px] pl-12 pr-12 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]">
               <button type="button" @click="showConfirmPassword = !showConfirmPassword"
                 class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition-colors duration-300"
                 :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'">
@@ -282,7 +282,7 @@ async function socialLogin(provider) {
 
           <!-- Submit -->
           <button type="submit" :disabled="isLoading"
-            class="w-full h-[52px] bg-[#38BDF8] hover:bg-[#0EA5E9] rounded-[14px] text-white font-semibold text-[15px] tracking-wide shadow-[0_4px_20px_-4px_rgba(56,189,248,0.4)] transition-all duration-300 hover:shadow-[0_8px_30px_-4px_rgba(56,189,248,0.5)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_2px_10px_-4px_rgba(56,189,248,0.4)] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_20px_-4px_rgba(56,189,248,0.4)] flex items-center justify-center gap-2">
+            class="w-full h-[52px] bg-gradient-to-r from-[#22c55e] to-[#16a34a] hover:from-[#16a34a] hover:to-[#15803d] rounded-[14px] text-white font-semibold text-[15px] tracking-wide shadow-[0_4px_20px_-4px_rgba(34,197,94,0.4)] transition-all duration-300 hover:shadow-[0_8px_30px_-4px_rgba(34,197,94,0.5)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_2px_10px_-4px_rgba(34,197,94,0.4)] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_20px_-4px_rgba(34,197,94,0.4)] flex items-center justify-center gap-2">
             <svg v-if="isLoading" class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -326,7 +326,7 @@ async function socialLogin(provider) {
         <!-- Login link -->
         <p class="mt-6 text-center text-sm text-[#64748B]">
           Already have an account?
-          <RouterLink to="/login" class="font-semibold text-[#38BDF8] hover:text-[#0EA5E9] transition-colors duration-300">Sign in</RouterLink>
+          <RouterLink to="/login" class="font-semibold text-[#22c55e] hover:text-[#16a34a] transition-colors duration-300">Sign in</RouterLink>
         </p>
 
         <!-- Bottom links -->
