@@ -207,7 +207,7 @@ async function socialLogin(provider) {
                 class="w-4 h-4 rounded border-gray-300 text-[#22c55e] focus:ring-[#22c55e] accent-[#22c55e]">
               <span class="text-sm text-[#64748B]">Remember Me</span>
             </label>
-            <a href="#" class="text-sm font-semibold text-[#22c55e] hover:text-[#16a34a] transition-colors duration-300">Forgot Password?</a>
+            <RouterLink to="/forgot-password" class="text-sm font-semibold text-[#22c55e] hover:text-[#16a34a] transition-colors duration-300">Forgot Password?</RouterLink>
           </div>
 
           <!-- Submit -->

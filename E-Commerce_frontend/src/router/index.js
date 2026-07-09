@@ -5,6 +5,8 @@ import ProductsView from '../views/ProductsView.vue';
 import ProductDetailView from '../views/ProductDetailView.vue';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
+import ForgotPasswordView from '../views/ForgotPasswordView.vue';
+import ResetPasswordView from '../views/ResetPasswordView.vue';
 import AboutView from '../views/AboutView.vue';
 import WishlistView from '../views/WishlistView.vue';
 import CartView from '../views/CartView.vue';
@@ -24,6 +26,8 @@ const routes = [
   { path: '/promotions', name: 'promotions', component: PromotionsView },
   { path: '/login', name: 'login', component: LoginView, meta: { guestOnly: true, layout: 'auth' } },
   { path: '/register', name: 'register', component: RegisterView, meta: { guestOnly: true, layout: 'auth' } },
+  { path: '/forgot-password', name: 'forgot-password', component: ForgotPasswordView, meta: { guestOnly: true, layout: 'auth' } },
+  { path: '/reset-password', name: 'reset-password', component: ResetPasswordView, meta: { guestOnly: true, layout: 'auth' } },
   { path: '/wishlist', name: 'wishlist', component: WishlistView, meta: { requiresAuth: true } },
   { path: '/cart', name: 'cart', component: CartView, meta: { requiresAuth: true } },
   { path: '/checkout', name: 'checkout', component: CheckoutView, meta: { requiresAuth: true } },
