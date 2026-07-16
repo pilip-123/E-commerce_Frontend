@@ -1,11 +1,12 @@
+<script setup>
+import bannerImg from '@/components/images/Kulean.jpg';
+</script>
+
 <template>
   <div class="about-page">
     <section class="about-hero">
-      <div class="about-hero__bg">
-        <div class="about-hero__shape about-hero__shape--1" />
-        <div class="about-hero__shape about-hero__shape--2" />
-        <div class="about-hero__shape about-hero__shape--3" />
-      </div>
+      <img class="about-hero__img" :src="bannerImg" alt="">
+      <div class="about-hero__overlay" />
       <div class="about-hero__inner">
         <p class="about-hero__eyebrow">About Us</p>
         <h1 class="about-hero__title">Empowering Your Business<br />with Smart Commerce</h1>
@@ -179,53 +180,37 @@
   width: 100vw;
   margin-left: calc(-50vw + 50%);
   margin-top: -32px;
-  background: linear-gradient(135deg, #052e16 0%, #064e3b 40%, #16a34a 70%, #22c55e 100%);
   overflow: hidden;
-  padding: 100px 0 80px;
+  height: 60vh;
+  min-height: 400px;
+  max-height: 700px;
 }
 
-.about-hero__bg {
+.about-hero__img {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.about-hero__shape {
+.about-hero__overlay {
   position: absolute;
-  border-radius: 50%;
-}
-
-.about-hero__shape--1 {
-  width: 500px;
-  height: 500px;
-  top: -200px;
-  right: -100px;
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.about-hero__shape--2 {
-  width: 300px;
-  height: 300px;
-  bottom: -80px;
-  left: -60px;
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.about-hero__shape--3 {
-  width: 200px;
-  height: 200px;
-  top: 40%;
-  left: 60%;
-  background: rgba(255, 255, 255, 0.03);
+  inset: 0;
+  background: linear-gradient(135deg, rgba(6, 78, 59, 0.65) 0%, rgba(22, 163, 74, 0.45) 100%);
+  z-index: 1;
 }
 
 .about-hero__inner {
   position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
   width: min(var(--content-width), calc(100% - 32px));
   margin: 0 auto;
   text-align: center;
-  z-index: 1;
+  z-index: 2;
+  height: 100%;
 }
 
 .about-hero__eyebrow {
@@ -603,7 +588,7 @@
 @media (max-width: 640px) {
   .about-hero {
     margin-top: -20px;
-    padding: 60px 0 48px;
+    min-height: 300px;
   }
 
   .about-stats__inner {

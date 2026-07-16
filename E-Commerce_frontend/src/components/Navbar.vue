@@ -152,10 +152,8 @@ async function handleLogout() {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--line);
+  background: linear-gradient(135deg, #064e3b, #16a34a);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .site-header__inner {
@@ -197,7 +195,7 @@ async function handleLogout() {
 .brand__copy strong {
   font-size: 0.92rem;
   font-weight: 600;
-  color: var(--text);
+  color: #fff;
   letter-spacing: 0.04em;
 }
 
@@ -215,14 +213,14 @@ async function handleLogout() {
 }
 
 .hamburger:hover {
-  background: var(--accent-soft);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .hamburger span {
   display: block;
   width: 20px;
   height: 2px;
-  background: var(--text);
+  background: #fff;
   border-radius: 2px;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
 }
@@ -268,26 +266,26 @@ async function handleLogout() {
   border-radius: 6px;
   font-size: 0.88rem;
   font-weight: 500;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   transition: color 0.15s, background 0.15s;
   white-space: nowrap;
 }
 
 .nav__link:hover {
-  color: var(--text);
-  background: var(--accent-soft);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .nav__link:global(.router-link-exact-active) {
-  color: var(--accent);
-  background: var(--accent-soft);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
   font-weight: 600;
 }
 
 .nav__link--hot {
   position: relative;
-  color: #dc2626;
+  color: #fca5a5;
 }
 
 .nav__link--hot::after {
@@ -298,7 +296,7 @@ async function handleLogout() {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #dc2626;
+  background: #fca5a5;
   animation: pulse 2s infinite;
 }
 
@@ -308,17 +306,18 @@ async function handleLogout() {
 }
 
 .nav__link--hot:hover {
-  background: rgba(220, 38, 38, 0.08);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
 }
 
 .active-lang {
-  color: var(--accent) !important;
+  color: #fff !important;
   font-weight: 700 !important;
 }
 
 .nav__link--hot:global(.router-link-exact-active) {
-  color: #dc2626;
-  background: rgba(220, 38, 38, 0.08);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .nav-actions {
@@ -345,7 +344,7 @@ async function handleLogout() {
 }
 
 .nav-user__avatar:hover {
-  border-color: var(--accent);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .nav-user__img {
@@ -374,14 +373,14 @@ async function handleLogout() {
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
 
 .nav-logout:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
 }
 
 .dropdown-wrapper {
@@ -394,10 +393,10 @@ async function handleLogout() {
   justify-content: center;
   width: 36px;
   height: 30px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 6px;
-  background: var(--surface);
-  color: var(--muted);
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.7rem;
   font-weight: 800;
   cursor: pointer;
@@ -407,9 +406,9 @@ async function handleLogout() {
 }
 
 .btn-lang:hover {
-  background: var(--accent-soft);
-  color: var(--accent);
-  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .dropdown-menu-lang {
@@ -449,6 +448,29 @@ async function handleLogout() {
 .dropdown-menu-lang button.active {
   background: var(--accent-soft);
   color: var(--accent);
+}
+
+.nav-actions :deep(.button) {
+  background: #fff;
+  color: #166534;
+  box-shadow: none;
+}
+
+.nav-actions :deep(.button--ghost) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+}
+
+.nav-actions :deep(.button--ghost:hover) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.nav-actions :deep(.button:hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 @media (max-width: 768px) {

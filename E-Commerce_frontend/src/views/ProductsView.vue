@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import bannerImg from '@/components/images/Orange.jpg';
 import ProductCard from '@/components/ProductCard.vue';
 import { addToCart } from '@/stores/cart';
 import { addToWishlist } from '@/stores/wishlist';
@@ -84,6 +85,17 @@ onUnmounted(() => {
 
 <template>
   <div class="page">
+    <!-- Page Banner -->
+    <section class="page-banner">
+      <img class="page-banner__img" :src="bannerImg" alt="">
+      <div class="page-banner__overlay" />
+      <div class="page-banner__inner">
+        <p class="page-banner__eyebrow">{{ t('products.catalog') }}</p>
+        <h1 class="page-banner__title">{{ t('products.title') }}</h1>
+        <p class="page-banner__lead">{{ t('products.subtitle') }}</p>
+      </div>
+    </section>
+
     <!-- Header -->
     <section class="catalog-header">
       <div class="catalog-header__content">
@@ -200,6 +212,83 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* ─── Page Banner ─── */
+.page-banner {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-top: -32px;
+  overflow: hidden;
+  height: 60vh;
+  min-height: 400px;
+  max-height: 700px;
+}
+
+.page-banner__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.page-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(6, 78, 59, 0.65) 0%, rgba(22, 163, 74, 0.45) 100%);
+  z-index: 1;
+}
+
+.page-banner__inner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: min(var(--content-width), calc(100% - 32px));
+  margin: 0 auto;
+  text-align: center;
+  z-index: 2;
+  height: 100%;
+}
+
+.page-banner__eyebrow {
+  display: inline-block;
+  margin: 0;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.page-banner__title {
+  margin: 16px 0 0;
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1.08;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.page-banner__lead {
+  margin: 14px auto 0;
+  max-width: 58ch;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.08rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 720px) {
+  .page-banner {
+    min-height: 300px;
+    margin-top: -24px;
+  }
+}
+
 /* ─── Header ─── */
 .catalog-header {
   display: grid;

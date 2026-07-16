@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import CartItem from '@/components/CartItem.vue';
+import ProductCard from '@/components/ProductCard.vue';
 import { formatCurrency } from '@/utils/format';
 import api from '@/api/axios';
 import {
@@ -12,6 +13,7 @@ import {
   useCart,
 } from '@/stores/cart';
 import { useAuth } from '@/stores/auth';
+import { addToWishlist } from '@/stores/wishlist';
 import { useLocale } from '@/composables/useLocale';
 
 const router = useRouter();
@@ -69,7 +71,7 @@ const promoProducts = computed(() => {
     for (const product of promo.products) {
       if (!seen.has(product.id)) {
         seen.add(product.id);
-        products.push({ ...product, promotion: promo });
+        products.push({ ...product, promotion: promo, has_discount: true });
       }
     }
   }
@@ -128,13 +130,12 @@ async function handleAddToCart(product) {
   await addToCart(product.id, 1);
 }
 
-function discountLabel(promotion) {
-  if (promotion.discount_type === 'percentage') return `-${promotion.discount_value}%`;
-  return `-${formatCurrency(promotion.discount_value)}`;
-}
-
-function goToProduct(product) {
-  router.push({ name: 'product-detail', params: { id: product.id } });
+async function handleAddToWishlist(product) {
+  if (!auth.token) {
+    router.push({ name: 'login', query: { redirect: router.currentRoute.value.fullPath } });
+    return;
+  }
+  await addToWishlist(product.id);
 }
 
 async function applyDiscount() {
@@ -262,169 +263,22 @@ function removeDiscount() {
         <RouterLink class="button button--ghost w-full sm:w-auto" to="/promotions">{{ t('general.view') }}</RouterLink>
       </div>
 
-      <div class="cart-promotion-products">
-        <article
+      <div class="grid-products">
+        <ProductCard
           v-for="product in promoProducts"
           :key="product.id"
-          class="cart-promo-card"
-          :class="{ 'cart-promo-card--oos': !product.stock || product.stock < 1 }"
-          @click="goToProduct(product)"
-        >
-          <div class="cart-promo-card__image">
-            <img v-if="product.image" :src="product.image" :alt="product.name" loading="lazy">
-            <div v-else class="cart-promo-card__placeholder">{{ t('general.no_data') }}</div>
-            <span v-if="product.stock > 0" class="cart-promo-card__badge">{{ discountLabel(product.promotion) }}</span>
-            <span v-else class="cart-promo-card__badge cart-promo-card__badge--oos">{{ t('product.out_of_stock') }}</span>
-          </div>
-          <div class="cart-promo-card__body">
-            <h3 class="cart-promo-card__title">{{ product.name }}</h3>
-            <div class="cart-promo-card__pricing">
-              <s class="cart-promo-card__old">{{ formatCurrency(product.price) }}</s>
-              <strong class="cart-promo-card__new">{{ formatCurrency(product.discount_price) }}</strong>
-            </div>
-            <div class="cart-promo-card__actions">
-              <button class="cart-promo-card__cart" type="button" :disabled="!product.stock || product.stock < 1" @click.stop="handleAddToCart(product)" :title="t('product.add_to_cart')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                  <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </article>
+          :product="product"
+          @add-to-cart="handleAddToCart"
+          @add-to-wishlist="handleAddToWishlist"
+        />
       </div>
     </section>
   </div>
 </template>
 
 <style scoped>
-.cart-promotion-products {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.cart-promo-card {
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface-strong);
-  overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-}
-
-.cart-promo-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-.cart-promo-card__image {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  background: var(--accent-soft);
-  overflow: hidden;
-}
-
-.cart-promo-card__image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.cart-promo-card__placeholder {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
-.cart-promo-card__badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 800;
-  padding: 5px 12px;
-  border-radius: 7px;
-  line-height: 1;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
-}
-
-.cart-promo-card__badge--oos {
-  background: linear-gradient(135deg, #64748b, #475569);
-  box-shadow: 0 2px 8px rgba(100, 116, 139, 0.4);
-}
-
-.cart-promo-card__body {
-  padding: 14px;
-  display: grid;
-  gap: 8px;
-}
-
-.cart-promo-card__title {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.cart-promo-card__pricing {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.cart-promo-card__old {
-  color: #9ca3af;
-  font-size: 0.82rem;
-}
-
-.cart-promo-card__new {
-  color: #dc2626;
-  font-size: 1.1rem;
-  font-weight: 800;
-}
-
-.cart-promo-card__actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 2px;
-}
-
-.cart-promo-card__cart {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border: 0;
-  border-radius: 6px;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: #fff;
-  font-size: 0.72rem;
-  font-weight: 600;
-  min-height: 24px;
-  cursor: pointer;
-  transition: opacity 0.15s, transform 0.15s;
-}
-
-.cart-promo-card__cart:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.cart-promo-card__cart:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
+.cart-promo {
+  margin-top: 12px;
 }
 
 .discount-apply-btn {
@@ -468,40 +322,4 @@ function removeDiscount() {
   background: rgba(220, 38, 38, 0.08);
 }
 
-.cart-promo-card--oos {
-  opacity: 0.5;
-}
-
-.cart-promo-card--oos .cart-promo-card__image img {
-  filter: grayscale(1);
-}
-
-.cart-promo-card--oos .cart-promo-card__title {
-  color: #94a3b8;
-}
-
-.cart-promo-card--oos .cart-promo-card__new {
-  color: #94a3b8;
-}
-
-.cart-promo-card--oos .cart-promo-card__cart {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.cart-promo {
-  margin-top: 12px;
-}
-
-@media (max-width: 1199px) {
-  .cart-promotion-products {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 767px) {
-  .cart-promotion-products {
-    grid-template-columns: 1fr;
-  }
-}
 </style>

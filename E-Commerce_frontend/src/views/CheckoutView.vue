@@ -118,7 +118,7 @@ async function handleSubmit() {
           <template v-if="hasProfile">
             <div class="info-display">
               <div class="info-row">
-                <span class="info-label">{{ t('auth.email') }}</span>
+                <span class="info-label">Phone</span>
                 <span class="info-value">{{ form.phone }}</span>
               </div>
               <div class="info-row">
@@ -130,8 +130,8 @@ async function handleSubmit() {
             <input v-model="form.shipping_address" type="hidden">
           </template>
           <template v-else>
-            <p class="text-muted small mb-2" style="color: #dc2626;">{{ t('general.no_data') }}</p>
-            <input v-model="form.phone" class="input" type="text" :placeholder="t('auth.email')" required>
+            <p class="text-muted small mb-2" style="color: #dc2626;">Please fill in your details</p>
+            <input v-model="form.phone" class="input" type="text" placeholder="Phone number" required>
             <textarea v-model="form.shipping_address" class="textarea" rows="3" :placeholder="t('checkout.shipping')" required></textarea>
           </template>
           <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
@@ -165,7 +165,7 @@ async function handleSubmit() {
           <strong>{{ discount ? finalTotal : total }}</strong>
         </div>
         <div v-if="totalSavings" class="summary-savings">
-          {{ t('general.no_data') }} <strong>{{ totalSavings }}</strong>
+          You saved <strong>{{ totalSavings }}</strong>
         </div>
       </aside>
     </section>

@@ -1,10 +1,12 @@
 <script setup>
 import { computed, onMounted, onUnmounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
+import bannerImg from '@/components/images/Pheech.jpg';
 import api from '@/api/axios';
 import { addToCart } from '@/stores/cart';
 import { addToWishlist } from '@/stores/wishlist';
 import { useAuth } from '@/stores/auth';
+import ProductCard from '@/components/ProductCard.vue';
 import { formatCurrency } from '@/utils/format';
 import { useLocale } from '@/composables/useLocale';
 
@@ -14,6 +16,7 @@ const auth = useAuth();
 const state = reactive({
   promotions: [],
   loading: false,
+  addingToCart: null,
 });
 
 async function fetchActivePromotions() {
@@ -33,8 +36,14 @@ async function handleAddToCart(product) {
     router.push({ name: 'login', query: { redirect: router.currentRoute.value.fullPath } });
     return;
   }
-  await addToCart(product.id, 1);
-  router.push({ name: 'cart' });
+  if (state.addingToCart === product.id) return;
+  state.addingToCart = product.id;
+  try {
+    await addToCart(product.id, 1);
+    router.push({ name: 'cart' });
+  } finally {
+    state.addingToCart = null;
+  }
 }
 
 async function handleAddToWishlist(product) {
@@ -44,10 +53,6 @@ async function handleAddToWishlist(product) {
   }
   await addToWishlist(product.id);
   router.push({ name: 'wishlist' });
-}
-
-function goToProduct(product) {
-  router.push({ name: 'product-detail', params: { id: product.id } });
 }
 
 function discountLabel(promotion) {
@@ -82,6 +87,17 @@ onUnmounted(() => {
 
 <template>
   <div class="page">
+    <!-- Page Banner -->
+    <section class="page-banner">
+      <img class="page-banner__img" :src="bannerImg" alt="">
+      <div class="page-banner__overlay" />
+      <div class="page-banner__inner">
+        <p class="page-banner__eyebrow">{{ t('promotions.title') }}</p>
+        <h1 class="page-banner__title">{{ t('promotions.title') }}</h1>
+        <p class="page-banner__lead">{{ t('promotions.empty') }}</p>
+      </div>
+    </section>
+
     <section class="promo-header">
       <div class="promo-header__content">
         <p class="eyebrow">{{ t('promotions.title') }}</p>
@@ -127,35 +143,14 @@ onUnmounted(() => {
         </div>
         <p v-if="promotion.description" class="promo-section__desc">{{ promotion.description }}</p>
 
-        <div v-if="promotion.products?.length" class="promo-grid">
-          <article v-for="product in promotion.products" :key="product.id" class="deal-card" :class="{ 'deal-card--oos': !product.stock || product.stock < 1 }" @click="goToProduct(product)">
-            <div class="deal-card__image">
-              <img v-if="product.image" :src="product.image" :alt="product.name" loading="lazy">
-              <div v-else class="deal-card__placeholder">{{ t('general.no_data') }}</div>
-              <span v-if="product.stock > 0" class="deal-card__badge">{{ discountLabel(promotion) }}</span>
-              <span v-else class="deal-card__badge deal-card__badge--oos">{{ t('product.out_of_stock') }}</span>
-            </div>
-            <div class="deal-card__body">
-              <h3 class="deal-card__title">{{ product.name }}</h3>
-              <div class="deal-card__pricing">
-                <s class="deal-card__old">{{ formatCurrency(product.price) }}</s>
-                <strong class="deal-card__new">{{ formatCurrency(product.discount_price) }}</strong>
-              </div>
-              <div class="deal-card__actions">
-                <button class="deal-card__cart" type="button" :disabled="!product.stock || product.stock < 1" @click.stop="handleAddToCart(product)" :title="t('product.add_to_cart')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                    <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                  </svg>
-                </button>
-                <button class="deal-card__wish min-w-[44px] min-h-[44px]" type="button" @click.stop="handleAddToWishlist(product)" :title="t('general.save')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </article>
+        <div v-if="promotion.products?.length" class="grid-products">
+          <ProductCard
+            v-for="product in promotion.products"
+            :key="product.id"
+            :product="{ ...product, has_discount: true, promotion }"
+            @add-to-cart="handleAddToCart"
+            @add-to-wishlist="handleAddToWishlist"
+          />
         </div>
         <div v-else class="promo-section__empty">
           <p>{{ t('promotions.empty') }}</p>
@@ -176,6 +171,83 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* ─── Page Banner ─── */
+.page-banner {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-top: -32px;
+  overflow: hidden;
+  height: 60vh;
+  min-height: 400px;
+  max-height: 700px;
+}
+
+.page-banner__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.page-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(6, 78, 59, 0.65) 0%, rgba(22, 163, 74, 0.45) 100%);
+  z-index: 1;
+}
+
+.page-banner__inner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: min(var(--content-width), calc(100% - 32px));
+  margin: 0 auto;
+  text-align: center;
+  z-index: 2;
+  height: 100%;
+}
+
+.page-banner__eyebrow {
+  display: inline-block;
+  margin: 0;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.page-banner__title {
+  margin: 16px 0 0;
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1.08;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.page-banner__lead {
+  margin: 14px auto 0;
+  max-width: 58ch;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.08rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 720px) {
+  .page-banner {
+    min-height: 300px;
+    margin-top: -24px;
+  }
+}
+
 /* ─── Header ─── */
 .promo-header {
   display: grid;
@@ -339,189 +411,7 @@ onUnmounted(() => {
   border-radius: var(--radius-lg);
 }
 
-/* ─── Deal Grid ─── */
-.promo-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
 
-@media (max-width: 1199px) {
-  .promo-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 767px) {
-  .promo-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ─── Deal Card ─── */
-.deal-card {
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface-strong);
-  overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.deal-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
-}
-
-.deal-card__image {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  background: var(--accent-soft);
-  overflow: hidden;
-}
-
-.deal-card__image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.deal-card__placeholder {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
-.deal-card__badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 800;
-  padding: 5px 12px;
-  border-radius: 7px;
-  line-height: 1;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
-}
-
-.deal-card__body {
-  padding: 14px;
-  display: grid;
-  gap: 8px;
-}
-
-.deal-card__title {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.deal-card__pricing {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.deal-card__old {
-  color: #9ca3af;
-  font-size: 0.82rem;
-}
-
-.deal-card__new {
-  color: #dc2626;
-  font-size: 1.1rem;
-  font-weight: 800;
-}
-
-.deal-card__actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 2px;
-}
-
-.deal-card__cart {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border: 0;
-  border-radius: 6px;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: #fff;
-  font-size: 0.72rem;
-  font-weight: 600;
-  min-height: 24px;
-  cursor: pointer;
-  transition: opacity 0.15s, transform 0.15s;
-}
-
-.deal-card__cart:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.deal-card__cart:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.deal-card__wish {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 24px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  flex-shrink: 0;
-}
-
-.deal-card__wish:hover {
-  background: rgba(239, 68, 68, 0.08);
-  color: #dc2626;
-}
-
-.deal-card--oos {
-  opacity: 0.5;
-}
-
-.deal-card--oos .deal-card__image img {
-  filter: grayscale(1);
-}
-
-.deal-card--oos .deal-card__title {
-  color: #94a3b8;
-}
-
-.deal-card--oos .deal-card__new {
-  color: #94a3b8;
-}
-
-.deal-card--oos .deal-card__cart {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.deal-card__badge--oos {
-  background: linear-gradient(135deg, #64748b, #475569);
-  box-shadow: 0 2px 8px rgba(100, 116, 139, 0.4);
-}
 
 /* ─── Empty ─── */
 .promo-empty {
