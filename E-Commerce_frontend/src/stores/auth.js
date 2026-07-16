@@ -77,3 +77,15 @@ export async function logout() {
     clearAuth();
   }
 }
+
+export async function forgotPassword(email, role) {
+  const endpoint = role === 'admin' ? '/admin/auth/forgot-password' : '/auth/forgot-password';
+  const { data } = await api.post(endpoint, { email, ...(role ? { role } : {}) });
+  return data;
+}
+
+export async function resetPassword(payload, role) {
+  const endpoint = role === 'admin' ? '/admin/auth/reset-password' : '/auth/reset-password';
+  const { data } = await api.post(endpoint, payload);
+  return data;
+}

@@ -44,7 +44,7 @@ onMounted(async () => {
   }
 
   try {
-    await api.post('/auth/validate-reset-token', {
+    await api.post('/admin/auth/validate-reset-token', {
       token: token.value,
       email: email.value,
     });
@@ -68,14 +68,14 @@ async function handleSubmit() {
   isLoading.value = true;
 
   try {
-    const { data } = await api.post('/auth/reset-password', {
+    const { data } = await api.post('/admin/auth/reset-password', {
       token: token.value,
       email: email.value,
       password: password.value,
       password_confirmation: passwordConfirmation.value,
     });
     successMessage.value = data.message;
-    setTimeout(() => router.push({ name: 'login' }), 2000);
+    setTimeout(() => router.push({ name: 'admin-login' }), 2000);
   } catch (error) {
     const messages = error.response?.data;
     if (messages?.errors) {
@@ -93,25 +93,21 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center p-4 sm:p-6 lg:p-8 font-['Poppins']">
-    <div class="fixed top-0 left-0 w-[500px] h-[500px] rounded-full bg-white/10 -translate-x-1/4 -translate-y-1/4 pointer-events-none"></div>
-    <div class="fixed bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-white/[0.07] translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
-    <div class="fixed top-1/3 right-0 w-[300px] h-[300px] rounded-full bg-white/[0.05] translate-x-1/2 pointer-events-none"></div>
-    <div class="fixed bottom-1/4 left-0 w-[250px] h-[250px] rounded-full bg-white/[0.06] -translate-x-1/2 pointer-events-none"></div>
+  <div class="min-h-screen bg-gradient-to-br from-[#1e293b] to-[#0f172a] flex items-center justify-center p-4 sm:p-6 lg:p-8 font-['Poppins']">
+    <div class="fixed top-0 left-0 w-[500px] h-[500px] rounded-full bg-white/[0.03] -translate-x-1/4 -translate-y-1/4 pointer-events-none"></div>
+    <div class="fixed bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-white/[0.02] translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
 
     <div class="w-full max-w-[560px] bg-white rounded-[20px] shadow-2xl overflow-hidden animate-slideUp">
       <div class="p-8 lg:p-12 xl:p-16 flex flex-col items-center text-center">
 
-        <!-- Loading -->
         <div v-if="isValidating" class="py-12">
-          <svg class="animate-spin h-10 w-10 text-[#22c55e] mx-auto" viewBox="0 0 24 24" fill="none">
+          <svg class="animate-spin h-10 w-10 text-[#1e293b] mx-auto" viewBox="0 0 24 24" fill="none">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
           <p class="mt-4 text-gray-400 text-sm">Validating your reset link...</p>
         </div>
 
-        <!-- Token Error -->
         <template v-else-if="tokenError">
           <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6">
             <svg class="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -120,8 +116,8 @@ async function handleSubmit() {
           </div>
           <h1 class="text-[#0F172A] text-[28px] lg:text-[32px] font-bold leading-tight">Invalid Link</h1>
           <p class="text-gray-400 mt-3 text-base">{{ tokenError }}</p>
-          <router-link to="/forgot-password"
-            class="mt-6 inline-flex items-center gap-2 h-[52px] px-8 bg-gradient-to-r from-[#22c55e] to-[#16a34a] rounded-[14px] text-white font-semibold text-[15px] shadow-[0_4px_20px_-4px_rgba(34,197,94,0.4)] hover:shadow-[0_8px_30px_-4px_rgba(34,197,94,0.5)] transition-all duration-300">
+          <router-link to="/admin/forgot-password"
+            class="mt-6 inline-flex items-center gap-2 h-[52px] px-8 bg-gradient-to-r from-[#1e293b] to-[#334155] rounded-[14px] text-white font-semibold text-[15px] shadow-[0_4px_20px_-4px_rgba(30,41,59,0.4)] hover:shadow-[0_8px_30px_-4px_rgba(30,41,59,0.5)] transition-all duration-300">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
@@ -129,9 +125,8 @@ async function handleSubmit() {
           </router-link>
         </template>
 
-        <!-- Reset Form -->
         <template v-else>
-          <div class="w-16 h-16 bg-gradient-to-br from-[#22c55e] to-[#16a34a] rounded-full flex items-center justify-center shadow-lg mb-6">
+          <div class="w-16 h-16 bg-gradient-to-br from-[#1e293b] to-[#334155] rounded-full flex items-center justify-center shadow-lg mb-6">
             <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -140,14 +135,14 @@ async function handleSubmit() {
 
           <h1 class="text-[#0F172A] text-[28px] lg:text-[32px] font-bold leading-tight">Set New Password</h1>
           <p class="text-gray-400 mt-3 text-base max-w-[380px]">
-            Choose a strong password to protect your account.
+            Choose a strong password for your admin account.
           </p>
 
           <div v-if="successMessage" class="mt-6 w-full p-4 bg-emerald-50 border border-emerald-200 rounded-[14px] text-sm text-emerald-700 font-medium text-center animate-fadeIn">
             <svg class="w-5 h-5 inline-block mr-2 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
             </svg>
-            {{ successMessage }} Redirecting to login...
+            {{ successMessage }} Redirecting to admin login...
           </div>
 
           <div v-if="errorMessage" class="mt-6 w-full p-4 bg-red-50 border border-red-200 rounded-[14px] text-sm text-red-600 font-medium text-center animate-fadeIn">
@@ -174,14 +169,14 @@ async function handleSubmit() {
 
             <div>
               <div class="relative group">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#1e293b] transition-colors duration-300">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                   </svg>
                 </span>
                 <input v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="New password"
-                  class="w-full h-[55px] pl-12 pr-12 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]">
+                  class="w-full h-[55px] pl-12 pr-12 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#1e293b] focus:ring-4 focus:ring-[#1e293b]/10 bg-white text-[15px]">
                 <button type="button" @click="showPassword = !showPassword"
                   class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition-colors"
                   :aria-label="showPassword ? 'Hide password' : 'Show password'">
@@ -196,7 +191,6 @@ async function handleSubmit() {
                 </button>
               </div>
 
-              <!-- Password Strength -->
               <div v-if="password" class="mt-3 animate-fadeIn">
                 <div class="flex gap-1.5">
                   <div v-for="i in 4" :key="i"
@@ -213,14 +207,14 @@ async function handleSubmit() {
 
             <div>
               <div class="relative group">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#1e293b] transition-colors duration-300">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                   </svg>
                 </span>
                 <input v-model="passwordConfirmation" :type="showConfirmPassword ? 'text' : 'password'" placeholder="Confirm new password"
-                  class="w-full h-[55px] pl-12 pr-12 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
+                  class="w-full h-[55px] pl-12 pr-12 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#1e293b] focus:ring-4 focus:ring-[#1e293b]/10 bg-white text-[15px]"
                   :class="{ 'border-red-300 focus:border-red-500 focus:ring-red-500/10': confirmError }">
                 <button type="button" @click="showConfirmPassword = !showConfirmPassword"
                   class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition-colors"
@@ -239,7 +233,7 @@ async function handleSubmit() {
             </div>
 
             <button type="submit" :disabled="isLoading || !isFormValid"
-              class="w-full h-[52px] bg-gradient-to-r from-[#22c55e] to-[#16a34a] hover:from-[#16a34a] hover:to-[#15803d] rounded-[14px] text-white font-semibold text-[15px] tracking-wide shadow-[0_4px_20px_-4px_rgba(34,197,94,0.4)] transition-all duration-300 hover:shadow-[0_8px_30px_-4px_rgba(34,197,94,0.5)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_2px_10px_-4px_rgba(34,197,94,0.4)] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_20px_-4px_rgba(34,197,94,0.4)] flex items-center justify-center gap-2">
+              class="w-full h-[52px] bg-gradient-to-r from-[#1e293b] to-[#334155] hover:from-[#334155] hover:to-[#475569] rounded-[14px] text-white font-semibold text-[15px] tracking-wide shadow-[0_4px_20px_-4px_rgba(30,41,59,0.4)] transition-all duration-300 hover:shadow-[0_8px_30px_-4px_rgba(30,41,59,0.5)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_2px_10px_-4px_rgba(30,41,59,0.4)] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_20px_-4px_rgba(30,41,59,0.4)] flex items-center justify-center gap-2">
               <svg v-if="isLoading" class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -254,7 +248,7 @@ async function handleSubmit() {
           </form>
 
           <p class="mt-6 text-center text-sm text-[#64748B]">
-            <RouterLink to="/login" class="font-semibold text-[#22c55e] hover:text-[#16a34a] transition-colors duration-300">Back to Sign In</RouterLink>
+            <RouterLink to="/admin/login" class="font-semibold text-[#1e293b] hover:text-[#334155] transition-colors duration-300">Back to Sign In</RouterLink>
           </p>
         </template>
       </div>
