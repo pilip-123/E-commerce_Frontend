@@ -177,7 +177,7 @@ function formatDate(date) {
         </div>
         <textarea v-model="reviewComment" class="input textarea" rows="3" placeholder="Share your thoughts about this product..."></textarea>
         <p v-if="reviewMessage" class="form-success" v-show="reviewMessage">{{ reviewMessage }}</p>
-        <button class="button w-full sm:w-auto" type="button" :disabled="!userRating || submitting" @click="submitReview">
+        <button class="button" type="button" :disabled="!userRating || submitting" @click="submitReview">
           {{ submitting ? 'Submitting...' : 'Submit Review' }}
         </button>
       </div>
@@ -574,10 +574,10 @@ function formatDate(date) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 24px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 6px;
   background: transparent;
   color: var(--muted);
   cursor: pointer;

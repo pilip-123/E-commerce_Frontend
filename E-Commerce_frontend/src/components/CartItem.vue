@@ -60,20 +60,23 @@ const discountLabel = computed(() => {
 .line-item__image-wrap {
   position: relative;
   flex-shrink: 0;
+  border-radius: 18px;
+  overflow: hidden;
 }
 
 .line-item__badge {
   position: absolute;
-  top: 6px;
-  left: 6px;
-  background: #dc2626;
+  top: 8px;
+  left: 8px;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
   color: #fff;
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   font-weight: 800;
-  padding: 2px 7px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
   line-height: 1;
-  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);
+  z-index: 1;
 }
 
 .line-item__price {
@@ -84,48 +87,60 @@ const discountLabel = computed(() => {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
+  gap: 8px;
 }
 
 .line-item__subtotal {
-  font-size: 0.95rem;
+  font-size: 1rem;
   white-space: nowrap;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .qty-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 24px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .qty-btn:hover {
   background: var(--accent-soft);
   color: var(--accent);
+  border-color: var(--accent);
+}
+
+.qty-btn:active {
+  transform: scale(0.95);
 }
 
 .delete-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 24px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   background: transparent;
   color: #ef4444;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .delete-btn:hover {
   background: rgba(239, 68, 68, 0.08);
+  border-color: #ef4444;
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
 }
 </style>

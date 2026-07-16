@@ -38,35 +38,46 @@ const emit = defineEmits(['add-to-cart', 'remove']);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 24px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 6px;
   background: linear-gradient(135deg, #22c55e, #16a34a);
   color: #fff;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: opacity 0.2s, transform 0.15s;
+  box-shadow: 0 4px 12px -4px rgba(34, 197, 94, 0.4);
 }
 
 .wish-cart-btn:hover {
   opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.wish-cart-btn:active {
+  transform: translateY(0) scale(0.95);
 }
 
 .wish-del-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 24px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   background: transparent;
   color: #ef4444;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .wish-del-btn:hover {
   background: rgba(239, 68, 68, 0.08);
+  border-color: #ef4444;
+}
+
+.wish-del-btn:active {
+  transform: scale(0.95);
 }
 </style>

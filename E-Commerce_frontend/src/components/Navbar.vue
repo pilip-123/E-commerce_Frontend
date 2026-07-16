@@ -123,8 +123,8 @@ async function handleLogout() {
   top: 0;
   z-index: 50;
   background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--line);
 }
 
@@ -135,34 +135,42 @@ async function handleLogout() {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 24px;
-  height: 64px;
+  height: 68px;
 }
 
-/* ─── Brand ─── */
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   text-decoration: none;
   flex-shrink: 0;
+  background: none !important;
+}
+
+.brand:hover,
+.brand:focus,
+.brand:active,
+.brand:global(.router-link-active),
+.brand:global(.router-link-exact-active) {
+  background: none !important;
 }
 
 .brand__logo {
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #fff;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .brand__copy strong {
-  font-size: 1.05rem;
-  font-weight: 800;
+  font-size: 0.92rem;
+  font-weight: 600;
   color: var(--text);
+  letter-spacing: 0.04em;
 }
 
-/* ─── Hamburger ─── */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -170,17 +178,23 @@ async function handleLogout() {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
   margin-left: auto;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.hamburger:hover {
+  background: var(--accent-soft);
 }
 
 .hamburger span {
   display: block;
-  width: 22px;
+  width: 20px;
   height: 2px;
   background: var(--text);
   border-radius: 2px;
-  transition: transform 0.2s, opacity 0.2s;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
 }
 
 .hamburger--open span:nth-child(1) {
@@ -195,7 +209,6 @@ async function handleLogout() {
   transform: rotate(-45deg) translate(5px, -5px);
 }
 
-/* ─── Nav ─── */
 .nav {
   display: flex;
   align-items: center;
@@ -221,10 +234,10 @@ async function handleLogout() {
 }
 
 .nav__link {
-  padding: 6px 14px;
-  border-radius: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
   font-size: 0.88rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--muted);
   text-decoration: none;
   transition: color 0.15s, background 0.15s;
@@ -239,6 +252,7 @@ async function handleLogout() {
 .nav__link:global(.router-link-exact-active) {
   color: var(--accent);
   background: var(--accent-soft);
+  font-weight: 600;
 }
 
 .nav__link--hot {
@@ -246,16 +260,32 @@ async function handleLogout() {
   color: #dc2626;
 }
 
+.nav__link--hot::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #dc2626;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
 .nav__link--hot:hover {
-  background: transparent;
+  background: rgba(220, 38, 38, 0.08);
 }
 
 .nav__link--hot:global(.router-link-exact-active) {
   color: #dc2626;
-  background: transparent;
+  background: rgba(220, 38, 38, 0.08);
 }
 
-/* ─── Actions ─── */
 .nav-actions {
   display: flex;
   align-items: center;
@@ -270,12 +300,12 @@ async function handleLogout() {
 }
 
 .nav-user__avatar {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   overflow: hidden;
   flex: none;
-  border: 2px solid var(--line);
+  border: 2px solid transparent;
   transition: border-color 0.2s;
 }
 
@@ -296,7 +326,7 @@ async function handleLogout() {
   place-items: center;
   background: linear-gradient(135deg, #22c55e, #16a34a);
   color: #fff;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 700;
 }
 
@@ -304,10 +334,10 @@ async function handleLogout() {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   background: transparent;
   color: var(--muted);
   cursor: pointer;
@@ -326,22 +356,26 @@ async function handleLogout() {
   }
 
   .hamburger span {
-    min-height: 3px;
+    min-height: 2.5px;
   }
 
   .site-header__inner {
     padding: 0 16px;
-    height: 56px;
-    gap: 8px;
+    height: 60px;
+    gap: 10px;
   }
 
   .brand__logo {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
   }
 
   .brand__copy strong {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
+  }
+
+  .nav {
+    display: none;
   }
 
   .nav-mobile {
@@ -356,20 +390,16 @@ async function handleLogout() {
     padding: 16px;
     background: #fff;
     transform: translateX(120%);
-    transition: transform 0.25s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow-y: auto;
     z-index: 999;
     border: 1px solid var(--line);
     border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
     max-height: calc(100vh - 80px);
   }
 
   .nav-mobile--open {
-    transform: translateX(0);
-  }
-
-  .nav--open {
     transform: translateX(0);
   }
 
@@ -392,6 +422,7 @@ async function handleLogout() {
     min-height: 44px;
     display: flex;
     align-items: center;
+    border-radius: 10px;
   }
 
   .nav-actions {
@@ -399,13 +430,13 @@ async function handleLogout() {
   }
 
   .nav-user__avatar {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
   }
 
   .nav-logout {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
   }
 }
 
@@ -416,8 +447,8 @@ async function handleLogout() {
   }
 
   .brand__logo {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
   }
 
   .brand__copy {
@@ -430,7 +461,7 @@ async function handleLogout() {
 
   .nav-actions .button--sm {
     padding: 6px 10px;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
   }
 }
 </style>

@@ -55,16 +55,17 @@ const emit = defineEmits(['confirm', 'cancel']);
   z-index: 1000;
   display: grid;
   place-items: center;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  padding: 16px;
 }
 
 .modal {
-  width: min(400px, calc(100% - 32px));
-  padding: 32px;
+  width: min(420px, 100%);
+  padding: 36px 32px 32px;
   border-radius: var(--radius-xl);
   background: #fff;
-  box-shadow: 0 32px 60px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.2);
   text-align: center;
 }
 
@@ -72,12 +73,12 @@ const emit = defineEmits(['confirm', 'cancel']);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: var(--accent-soft);
   color: var(--accent);
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .modal__icon--danger {
@@ -87,19 +88,25 @@ const emit = defineEmits(['confirm', 'cancel']);
 
 .modal__title {
   margin: 0 0 8px;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
+  font-weight: 700;
 }
 
 .modal__message {
-  margin: 0 0 24px;
+  margin: 0 0 28px;
   color: var(--muted);
-  line-height: 1.5;
+  line-height: 1.6;
+  font-size: 0.92rem;
 }
 
 .modal__actions {
   display: flex;
   gap: 10px;
   justify-content: center;
+}
+
+.modal__actions .button {
+  min-width: 120px;
 }
 
 @media (max-width: 640px) {
@@ -112,30 +119,31 @@ const emit = defineEmits(['confirm', 'cancel']);
   }
 
   .modal {
-    padding: 24px 20px;
+    padding: 28px 20px 24px;
   }
 
   .modal__title {
-    font-size: 1.05rem;
+    font-size: 1.1rem;
   }
 }
 
 .button--danger {
-  background: #dc2626;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  box-shadow: 0 4px 16px -4px rgba(220, 38, 38, 0.35);
 }
 
 .button--danger:hover {
-  background: #b91c1c;
+  box-shadow: 0 8px 28px -4px rgba(220, 38, 38, 0.45);
 }
 
 .modal-enter-active,
 .modal-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
 }
 
 .modal-enter-active .modal,
 .modal-leave-active .modal {
-  transition: transform 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .modal-enter-from,
@@ -144,10 +152,10 @@ const emit = defineEmits(['confirm', 'cancel']);
 }
 
 .modal-enter-from .modal {
-  transform: scale(0.95) translateY(8px);
+  transform: scale(0.92) translateY(12px);
 }
 
 .modal-leave-to .modal {
-  transform: scale(0.95) translateY(8px);
+  transform: scale(0.92) translateY(12px);
 }
 </style>

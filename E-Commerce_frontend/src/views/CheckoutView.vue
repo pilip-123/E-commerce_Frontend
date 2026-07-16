@@ -132,7 +132,7 @@ async function handleSubmit() {
             <textarea v-model="form.shipping_address" class="textarea" rows="3" placeholder="Shipping address" required></textarea>
           </template>
           <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
-          <button class="button w-full" type="submit" :disabled="submitting || !form.phone || !form.shipping_address">
+          <button class="button" type="submit" :disabled="submitting || !form.phone || !form.shipping_address">
             {{ submitting ? 'Processing...' : 'Place order' }}
           </button>
         </form>

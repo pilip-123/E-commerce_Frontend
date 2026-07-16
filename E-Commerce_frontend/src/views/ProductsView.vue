@@ -246,9 +246,9 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   width: 40px;
-  height: 40px;
+  height: 24px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   transition: opacity 0.15s;
 }

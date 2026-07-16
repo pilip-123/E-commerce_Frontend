@@ -450,14 +450,15 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 9px 12px;
+  gap: 4px;
+  padding: 3px 8px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 6px;
   background: linear-gradient(135deg, #22c55e, #16a34a);
   color: #fff;
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.72rem;
+  font-weight: 600;
+  min-height: 24px;
   cursor: pointer;
   transition: opacity 0.15s, transform 0.15s;
 }
@@ -477,10 +478,10 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 24px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   background: transparent;
   color: var(--muted);
   cursor: pointer;
