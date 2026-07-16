@@ -1,33 +1,48 @@
 <script setup>
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { fetchCategories, useProduct } from '@/stores/product';
+import { useLocale } from '@/composables/useLocale';
 
 const productState = useProduct();
+const { t } = useLocale();
+const currentPage = ref(1);
+const cm = () => productState.categoryMeta;
 
 const totalProducts = computed(() =>
   productState.categories.reduce((sum, c) => sum + (c.products_count ?? 0), 0)
 );
 
-onMounted(fetchCategories);
+async function loadCategories(page = 1) {
+  currentPage.value = page;
+  await fetchCategories({ page, per_page: 10 });
+}
+
+function goToPage(page) {
+  if (page < 1 || page > cm().last_page) return;
+  loadCategories(page);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+onMounted(() => loadCategories(1));
 </script>
 
 <template>
   <div class="page">
     <section class="cat-header">
       <div class="cat-header__content">
-        <p class="eyebrow">Categories</p>
-        <h1>Browse by category</h1>
-        <p class="cat-header__lead">All product categories organized in one view. Click any category to browse its products.</p>
+        <p class="eyebrow">{{ t('categories.all') }}</p>
+        <h1>{{ t('categories.title') }}</h1>
+        <p class="cat-header__lead">{{ t('categories.subtitle') }}</p>
       </div>
       <div class="cat-header__stats">
         <div class="cat-stat">
           <span class="cat-stat__value">{{ productState.categories.length }}</span>
-          <span class="cat-stat__label">Categories</span>
+          <span class="cat-stat__label">{{ t('categories.count') }}</span>
         </div>
         <div class="cat-stat">
           <span class="cat-stat__value">{{ totalProducts }}</span>
-          <span class="cat-stat__label">Products</span>
+          <span class="cat-stat__label">{{ t('products.count') }}</span>
         </div>
       </div>
     </section>
@@ -35,46 +50,56 @@ onMounted(fetchCategories);
     <section class="section">
       <div class="section__header flex-col sm:flex-row items-start sm:items-end gap-3 sm:gap-4">
         <div>
-          <p class="eyebrow">Overview</p>
-          <h2>All categories</h2>
+          <p class="eyebrow">{{ t('categories.overview') }}</p>
+          <h2>{{ t('categories.all') }}</h2>
         </div>
-        <RouterLink class="button button--ghost w-full sm:w-auto" to="/products">All Products</RouterLink>
+        <RouterLink class="button button--ghost w-full sm:w-auto" to="/products">{{ t('categories.all_products') }}</RouterLink>
       </div>
 
-      <div v-if="productState.categories.length" class="cat-table-wrap overflow-x-auto">
-        <table class="cat-table min-w-[640px]">
-          <thead>
-            <tr>
-              <th class="col-num">#</th>
-              <th class="col-name">Name</th>
-              <th class="col-desc">Description</th>
-              <th class="col-count">Products</th>
-              <th class="col-action">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(category, idx) in productState.categories" :key="category.id">
-              <td class="col-num">{{ idx + 1 }}</td>
-              <td class="col-name">
-                <strong>{{ category.name }}</strong>
-                <span class="slug">{{ category.slug }}</span>
-              </td>
-              <td class="col-desc">{{ category.description ?? '—' }}</td>
-              <td class="col-count">
-                <span class="count-badge">{{ category.products_count ?? 0 }}</span>
-              </td>
-              <td class="col-action">
-                <RouterLink
-                  class="btn-link"
-                  :to="{ name: 'products', query: { category_id: category.id } }"
-                >
-                  Browse →
-                </RouterLink>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div v-if="productState.categories.length" class="cat-grid">
+        <RouterLink
+          v-for="category in productState.categories"
+          :key="category.id"
+          class="cat-card"
+          :to="{ name: 'products', query: { category_id: category.id } }"
+        >
+          <div class="cat-card__head">
+            <div class="cat-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+              </svg>
+            </div>
+            <div>
+              <strong class="cat-card__name">{{ category.name }}</strong>
+              <span class="cat-card__slug">{{ category.slug }}</span>
+            </div>
+          </div>
+          <p class="cat-card__desc">{{ category.description || t('general.no_data') }}</p>
+          <div class="cat-card__foot">
+            <span class="cat-card__count">{{ category.products_count ?? 0 }} {{ t('products.title') }}</span>
+            <span class="cat-card__action">{{ t('categories.action') }}</span>
+          </div>
+        </RouterLink>
       </div>
+
+      <nav v-if="cm().last_page > 1" class="pagination">
+        <button class="pagination__btn" :disabled="currentPage <= 1" @click="goToPage(currentPage - 1)">
+          {{ t('categories.prev') }}
+        </button>
+        <button
+          v-for="p in cm().last_page"
+          :key="p"
+          class="pagination__page"
+          :class="{ 'pagination__page--active': p === currentPage }"
+          @click="goToPage(p)"
+        >{{ p }}</button>
+        <button class="pagination__btn" :disabled="currentPage >= cm().last_page" @click="goToPage(currentPage + 1)">
+          {{ t('categories.next') }}
+        </button>
+      </nav>
 
       <div v-else class="cat-empty">
         <svg class="cat-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -83,8 +108,8 @@ onMounted(fetchCategories);
           <line x1="4" y1="12" x2="20" y2="12" />
           <line x1="4" y1="16" x2="20" y2="16" />
         </svg>
-        <p class="cat-empty__title">No categories yet</p>
-        <p class="cat-empty__sub">Categories will appear here once they are created.</p>
+        <p class="cat-empty__title">{{ t('categories.empty') }}</p>
+        <p class="cat-empty__sub">{{ t('categories.empty_hint') }}</p>
       </div>
     </section>
   </div>
@@ -152,119 +177,102 @@ onMounted(fetchCategories);
   letter-spacing: 0.08em;
 }
 
-/* ─── Table ─── */
-.cat-table-wrap {
+/* ─── Category Cards ─── */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.cat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  background: var(--surface-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
   box-shadow: var(--shadow);
+  text-decoration: none;
+  transition: all 0.2s;
 }
 
-.cat-table {
-  width: 100%;
-  border-collapse: collapse;
+.cat-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
-.cat-table thead {
-  background: var(--accent-soft);
-}
-
-.cat-table th {
-  padding: 16px 20px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent);
-  text-align: left;
-  border-bottom: 1px solid var(--line);
-}
-
-.cat-table td {
-  padding: 16px 20px;
-  font-size: 0.88rem;
-  color: var(--text);
-  border-bottom: 1px solid var(--line);
-  vertical-align: middle;
-}
-
-.cat-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.cat-table tbody tr:hover {
-  background: var(--bg);
-}
-
-/* ─── Columns ─── */
-.col-num {
-  width: 56px;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.col-name {
-  min-width: 180px;
-}
-
-.col-name strong {
-  display: block;
-  font-size: 0.95rem;
-}
-
-.col-name .slug {
-  display: block;
-  font-size: 0.72rem;
-  color: var(--muted);
-  font-weight: 500;
-  margin-top: 2px;
-}
-
-.col-desc {
-  color: var(--muted);
-  max-width: 320px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.col-count {
-  width: 100px;
-}
-
-.count-badge {
-  display: inline-flex;
+.cat-card__head {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  min-width: 32px;
+  gap: 14px;
+}
+
+.cat-card__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.cat-card__name {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.cat-card__slug {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.cat-card__desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cat-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.cat-card__count {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-soft);
   padding: 3px 12px;
   border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 0.8rem;
+}
+
+.cat-card__action {
+  font-size: 0.82rem;
   font-weight: 700;
+  color: var(--muted);
+  transition: color 0.15s;
 }
 
-.col-action {
-  width: 120px;
-}
-
-.btn-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.85rem;
-  font-weight: 700;
+.cat-card:hover .cat-card__action {
   color: var(--accent);
-  text-decoration: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  transition: background 0.15s;
-}
-
-.btn-link:hover {
-  background: var(--accent-soft);
 }
 
 /* ─── Empty ─── */
@@ -296,6 +304,67 @@ onMounted(fetchCategories);
   color: var(--muted);
 }
 
+/* ─── Pagination ─── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+.pagination__btn {
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pagination__btn:hover:not(:disabled) {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.pagination__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination__page {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pagination__page:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.pagination__page--active {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  border-color: transparent;
+}
+
 @media (max-width: 1024px) {
   .cat-header {
     grid-template-columns: 1fr;
@@ -303,11 +372,14 @@ onMounted(fetchCategories);
   .cat-header__stats {
     grid-template-columns: 1fr 1fr;
   }
+  .cat-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
 }
 
-@media (max-width: 720px) {
-  .col-desc {
-    display: none;
+@media (max-width: 640px) {
+  .cat-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

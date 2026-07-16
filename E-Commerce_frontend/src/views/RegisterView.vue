@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { register } from '@/stores/auth';
 import api from '@/api/axios';
 import logoUrl from '@/assets/logo.png';
+import { useLocale } from '@/composables/useLocale';
 
 const router = useRouter();
 const errorMessage = ref('');
@@ -13,34 +14,41 @@ const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 
 const form = reactive({
-  name: '',
+  first_name: '',
+  last_name: '',
   email: '',
   phone: '',
-  address: '',
   password: '',
   password_confirmation: '',
 });
 
 const errors = reactive({
-  name: '',
+  first_name: '',
+  last_name: '',
   email: '',
   phone: '',
-  address: '',
   password: '',
   password_confirmation: '',
 });
 
+const { t } = useLocale();
+
 function validateForm() {
   let valid = true;
-  errors.name = '';
+  errors.first_name = '';
+  errors.last_name = '';
   errors.email = '';
   errors.phone = '';
-  errors.address = '';
   errors.password = '';
   errors.password_confirmation = '';
 
-  if (!form.name) {
-    errors.name = 'Name is required';
+  if (!form.first_name) {
+    errors.first_name = 'First name is required';
+    valid = false;
+  }
+
+  if (!form.last_name) {
+    errors.last_name = 'Last name is required';
     valid = false;
   }
 
@@ -75,7 +83,7 @@ async function handleSubmit() {
   isLoading.value = true;
 
   try {
-    await register(form);
+    await register({ ...form, name: form.first_name + ' ' + form.last_name });
     await router.push({ name: 'home' });
   } catch (error) {
     errorMessage.value = error.response?.data?.message ?? 'Unable to register.';
@@ -147,32 +155,48 @@ async function socialLogin(provider) {
 
         <!-- Copyright -->
         <div class="flex-shrink-0 text-center lg:text-left">
-          <p class="text-sm text-gray-400">&copy; 2026 E-Commerce. All rights reserved.</p>
+          <p class="text-sm text-gray-400">&copy; 2026 E-Commerce. {{ t('footer.rights') }}</p>
         </div>
       </div>
 
       <!-- Right Column -->
       <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center overflow-y-auto">
         <!-- Heading -->
-        <h1 class="text-[#0F172A] text-[36px] lg:text-[44px] font-bold leading-tight">Create Account</h1>
-        <p class="text-gray-400 mt-2 text-lg">Join us today</p>
+        <h1 class="text-[#0F172A] text-[36px] lg:text-[44px] font-bold leading-tight">{{ t('auth.register_btn') }}</h1>
+        <p class="text-gray-400 mt-2 text-lg">{{ t('home.subtitle') }}</p>
 
         <!-- Form -->
         <form @submit.prevent="handleSubmit" class="mt-8 space-y-4" novalidate>
-          <!-- Name -->
-          <div>
-            <div class="relative group">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-              </span>
-              <input v-model="form.name" type="text" placeholder="Full name"
-                class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
-                @input="errors.name = ''">
+          <!-- First & Last Name -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <div class="relative group">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </span>
+                <input v-model="form.first_name" type="text" placeholder="First Name *"
+                  class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
+                  @input="errors.first_name = ''">
+              </div>
+              <p v-if="errors.first_name" class="mt-1 text-sm text-red-500 font-medium">{{ errors.first_name }}</p>
             </div>
-            <p v-if="errors.name" class="mt-1 text-sm text-red-500 font-medium">{{ errors.name }}</p>
+            <div>
+              <div class="relative group">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </span>
+                <input v-model="form.last_name" type="text" placeholder="Last Name *"
+                  class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
+                  @input="errors.last_name = ''">
+              </div>
+              <p v-if="errors.last_name" class="mt-1 text-sm text-red-500 font-medium">{{ errors.last_name }}</p>
+            </div>
           </div>
 
           <!-- Email -->
@@ -184,42 +208,26 @@ async function socialLogin(provider) {
                   <path d="M22 4L12 13 2 4" />
                 </svg>
               </span>
-              <input v-model="form.email" type="email" placeholder="Email address"
+              <input v-model="form.email" type="email" :placeholder="t('auth.email')"
                 class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
                 @input="errors.email = ''">
             </div>
             <p v-if="errors.email" class="mt-1 text-sm text-red-500 font-medium">{{ errors.email }}</p>
           </div>
 
-          <!-- Phone & Address -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <div class="relative group">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                  </svg>
-                </span>
-                <input v-model="form.phone" type="text" placeholder="Phone number"
-                  class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
-                  @input="errors.phone = ''">
-              </div>
-              <p v-if="errors.phone" class="mt-1 text-sm text-red-500 font-medium">{{ errors.phone }}</p>
+          <!-- Phone -->
+          <div>
+            <div class="relative group">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+              </span>
+              <input v-model="form.phone" type="text" placeholder="Phone"
+                class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
+                @input="errors.phone = ''">
             </div>
-            <div>
-              <div class="relative group">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-[#22c55e] transition-colors duration-300">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                </span>
-                <input v-model="form.address" type="text" placeholder="Address"
-                  class="w-full h-[50px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
-                  @input="errors.address = ''">
-              </div>
-              <p v-if="errors.address" class="mt-1 text-sm text-red-500 font-medium">{{ errors.address }}</p>
-            </div>
+            <p v-if="errors.phone" class="mt-1 text-sm text-red-500 font-medium">{{ errors.phone }}</p>
           </div>
 
           <!-- Password -->
@@ -231,12 +239,12 @@ async function socialLogin(provider) {
                   <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
               </span>
-              <input v-model="form.password" :type="showPassword ? 'text' : 'password'" placeholder="Password"
+              <input v-model="form.password" :type="showPassword ? 'text' : 'password'" :placeholder="t('auth.password')"
                 class="w-full h-[50px] pl-12 pr-12 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
                 @input="errors.password = ''">
               <button type="button" @click="showPassword = !showPassword"
                 class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition-colors duration-300"
-                :aria-label="showPassword ? 'Hide password' : 'Show password'">
+                :aria-label="showPassword ? t('general.cancel') : t('general.view')">
                 <svg v-if="showPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
                   <line x1="1" y1="1" x2="23" y2="23" />
@@ -263,7 +271,7 @@ async function socialLogin(provider) {
                 class="w-full h-[50px] pl-12 pr-12 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]">
               <button type="button" @click="showConfirmPassword = !showConfirmPassword"
                 class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition-colors duration-300"
-                :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'">
+                :aria-label="showConfirmPassword ? t('general.cancel') : t('general.view')">
                 <svg v-if="showConfirmPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
                   <line x1="1" y1="1" x2="23" y2="23" />
@@ -288,7 +296,7 @@ async function socialLogin(provider) {
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
             <template v-else>
-              <span>Create Account</span>
+              <span>{{ t('auth.register_btn') }}</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -300,7 +308,7 @@ async function socialLogin(provider) {
         <!-- Social login -->
         <div class="mt-6 flex items-center gap-3">
           <span class="flex-1 h-px bg-gray-200"></span>
-          <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Or continue with</span>
+          <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">or</span>
           <span class="flex-1 h-px bg-gray-200"></span>
         </div>
         <div class="mt-4 grid grid-cols-2 gap-3">
@@ -314,26 +322,26 @@ async function socialLogin(provider) {
             </svg>
             Google
           </button>
-          <button type="button" @click="socialLogin('facebook')"
+          <button type="button" @click="socialLogin('github')"
             class="flex items-center justify-center gap-3 h-[50px] border border-gray-200 rounded-[14px] text-sm font-semibold text-[#1E293B] bg-white hover:bg-gray-50 hover:shadow-md transition-all duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#1B1F23">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
             </svg>
-            Facebook
+            GitHub
           </button>
         </div>
 
         <!-- Login link -->
         <p class="mt-6 text-center text-sm text-[#64748B]">
-          Already have an account?
-          <RouterLink to="/login" class="font-semibold text-[#22c55e] hover:text-[#16a34a] transition-colors duration-300">Sign in</RouterLink>
+          {{ t('auth.has_account') }}
+          <RouterLink to="/login" class="font-semibold text-[#22c55e] hover:text-[#16a34a] transition-colors duration-300">{{ t('auth.login_btn') }}</RouterLink>
         </p>
 
         <!-- Bottom links -->
         <div class="mt-6 pt-5 border-t border-gray-100 flex items-center justify-center gap-4 text-xs text-gray-400">
-          <a href="#" class="hover:text-gray-600 transition-colors duration-300">Terms &amp; Conditions</a>
+          <a href="#" class="hover:text-gray-600 transition-colors duration-300">Terms</a>
           <span class="text-gray-300">|</span>
-          <a href="#" class="hover:text-gray-600 transition-colors duration-300">Privacy Policy</a>
+          <a href="#" class="hover:text-gray-600 transition-colors duration-300">Privacy</a>
         </div>
       </div>
     </div>

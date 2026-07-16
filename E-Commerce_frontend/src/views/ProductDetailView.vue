@@ -7,6 +7,7 @@ import { addToWishlist } from '@/stores/wishlist';
 import { fetchProduct, useProduct } from '@/stores/product';
 import { useAuth } from '@/stores/auth';
 import api from '@/api/axios';
+import { useLocale } from '@/composables/useLocale';
 
 const route = useRoute();
 const router = useRouter();
@@ -40,6 +41,8 @@ const savingsPercent = computed(() => {
 });
 
 const outOfStock = computed(() => !productState.product?.stock || productState.product.stock < 1);
+
+const { t } = useLocale();
 
 function setRating(val) {
   userRating.value = val;
@@ -105,11 +108,11 @@ function formatDate(date) {
       <div class="detail__media">
         <img v-if="productState.product.image" :src="productState.product.image" :alt="productState.product.name" class="detail__image" loading="lazy">
         <span v-if="discountLabel" class="detail__badge">{{ discountLabel }}</span>
-        <span v-if="outOfStock" class="detail__badge detail__badge--oos">Out of stock</span>
+        <span v-if="outOfStock" class="detail__badge detail__badge--oos">{{ t('product.out_of_stock') }}</span>
       </div>
 
       <div class="detail__content">
-        <p class="eyebrow">{{ productState.product.category?.name ?? 'Product' }}</p>
+        <p class="eyebrow">{{ productState.product.category?.name ?? t('product.category') }}</p>
         <h1>{{ productState.product.name }}</h1>
 
         <div class="detail__rating" v-if="avgRating">
@@ -117,36 +120,36 @@ function formatDate(date) {
             <span v-for="i in 5" :key="i" class="star" :class="{ filled: i <= fullStars, half: i === fullStars + 1 && hasHalfStar }">&#9733;</span>
           </span>
           <span class="rating-value">{{ avgRating }}</span>
-          <span class="rating-count">({{ reviewsCount }} review{{ reviewsCount !== 1 ? 's' : '' }})</span>
+          <span class="rating-count">({{ reviewsCount }} {{ t('product.reviews') }})</span>
         </div>
 
         <div class="detail__price" v-if="productState.product?.has_discount">
           <s class="price-old">{{ formatCurrency(productState.product.price) }}</s>
           <strong class="price-new">{{ formatCurrency(productState.product.discount_price) }}</strong>
-          <span class="price-save" v-if="savingsPercent">Save {{ savingsPercent }}%</span>
+          <span class="price-save" v-if="savingsPercent">{{ t('general.save') }} {{ savingsPercent }}%</span>
         </div>
         <p class="detail__price" v-else>{{ formatCurrency(productState.product.price) }}</p>
         <p class="detail__text">{{ productState.product.description }}</p>
 
         <div class="detail__meta">
-          <span v-if="outOfStock" class="detail__meta--oos">Out of stock</span>
-          <span v-else>Stock {{ productState.product.stock }}</span>
-          <span>{{ productState.product.status ? 'Live' : 'Hidden' }}</span>
+          <span v-if="outOfStock" class="detail__meta--oos">{{ t('product.out_of_stock') }}</span>
+          <span v-else>{{ t('product.quantity') }} {{ productState.product.stock }}</span>
+          <span>{{ productState.product.status ? t('product.in_stock') : t('general.no_data') }}</span>
         </div>
 
         <div class="detail__actions">
-          <button class="btn-icon-detail btn-icon-detail--cart" type="button" :disabled="outOfStock" @click="handleAddToCart" title="Add to cart">
+          <button class="btn-icon-detail btn-icon-detail--cart" type="button" :disabled="outOfStock" @click="handleAddToCart" :title="t('product.add_to_cart')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
               <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
             </svg>
           </button>
-          <button class="btn-icon-detail btn-icon-detail--wish" type="button" @click="handleAddToWishlist" title="Save to wishlist">
+          <button class="btn-icon-detail btn-icon-detail--wish" type="button" @click="handleAddToWishlist" :title="t('product.add_to_wishlist')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </button>
-          <button class="btn-icon-detail btn-icon-detail--back" type="button" @click="router.back()" title="Go back">
+          <button class="btn-icon-detail btn-icon-detail--back" type="button" @click="router.back()" :title="t('product.back')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
               <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
             </svg>
@@ -158,8 +161,8 @@ function formatDate(date) {
     <!-- Review Form -->
     <section class="review-form-section" v-if="productState.product">
       <div class="review-form-section__header">
-        <p class="eyebrow">Reviews</p>
-        <h2>Customer reviews</h2>
+        <p class="eyebrow">{{ t('product.reviews') }}</p>
+        <h2>{{ t('product.reviews') }}</h2>
       </div>
 
       <div class="review-form-card">
@@ -173,12 +176,12 @@ function formatDate(date) {
             @mouseleave="hoverRating = 0"
           >&#9733;</span>
           <span class="rating-label" v-if="userRating">{{ userRating }}/5</span>
-          <span class="rating-label muted" v-else>Click to rate</span>
+          <span class="rating-label muted" v-else>{{ t('product.rating') }}</span>
         </div>
-        <textarea v-model="reviewComment" class="input textarea" rows="3" placeholder="Share your thoughts about this product..."></textarea>
+        <textarea v-model="reviewComment" class="input textarea" rows="3" :placeholder="t('product.description')"></textarea>
         <p v-if="reviewMessage" class="form-success" v-show="reviewMessage">{{ reviewMessage }}</p>
         <button class="button" type="button" :disabled="!userRating || submitting" @click="submitReview">
-          {{ submitting ? 'Submitting...' : 'Submit Review' }}
+          {{ submitting ? t('general.loading') : t('general.submit') }}
         </button>
       </div>
     </section>
@@ -190,10 +193,10 @@ function formatDate(date) {
           <thead>
             <tr>
               <th class="col-num">#</th>
-              <th class="col-user">Customer</th>
-              <th class="col-rating">Rating</th>
-              <th class="col-comment">Comment</th>
-              <th class="col-date">Date</th>
+              <th class="col-user">{{ t('profile.personal') }}</th>
+              <th class="col-rating">{{ t('product.rating') }}</th>
+              <th class="col-comment">{{ t('product.description') }}</th>
+              <th class="col-date">{{ t('general.no_data') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -203,7 +206,7 @@ function formatDate(date) {
                 <div class="reviewer">
                   <img v-if="review.user?.image_url" :src="review.user.image_url" :alt="review.user.name" class="reviewer-avatar">
                   <div v-else class="reviewer-avatar reviewer-avatar--initials">{{ review.user?.name?.[0]?.toUpperCase() ?? '?' }}</div>
-                  <span class="reviewer-name">{{ review.user?.name ?? 'Anonymous' }}</span>
+                  <span class="reviewer-name">{{ review.user?.name ?? t('general.no_data') }}</span>
                 </div>
               </td>
               <td class="col-rating">
@@ -222,7 +225,7 @@ function formatDate(date) {
         </table>
       </div>
       <div v-else class="reviews-empty">
-        <p>No reviews yet. Be the first to review this product!</p>
+        <p>{{ t('product.reviews') }}</p>
       </div>
     </section>
   </div>

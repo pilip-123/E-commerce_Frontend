@@ -4,13 +4,24 @@ import logoUrl from '@/assets/logo.png';
 import { RouterLink } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { logout, useAuth } from '@/stores/auth';
+import { useLocale } from '@/composables/useLocale';
 import ConfirmModal from './ConfirmModal.vue';
 import NotificationBell from './NotificationBell.vue';
 
 const auth = useAuth();
 const router = useRouter();
+const { t, locale, setLocale } = useLocale();
 const showLogoutModal = ref(false);
 const mobileOpen = ref(false);
+const showLang = ref(false);
+
+function closeLang(e) {
+  if (!e.target.closest('.dropdown-wrapper')) showLang.value = false;
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', closeLang);
+}
 
 const initials = computed(() => {
   if (!auth.user?.name) return '?';
@@ -50,19 +61,28 @@ async function handleLogout() {
 
       <nav class="nav md:flex hidden">
         <div class="nav__primary">
-          <RouterLink to="/" class="nav__link" @click="mobileOpen = false">Home</RouterLink>
-          <RouterLink to="/products" class="nav__link" @click="mobileOpen = false">Products</RouterLink>
-          <RouterLink to="/promotions" class="nav__link nav__link--hot" @click="mobileOpen = false">Promotions</RouterLink>
+          <RouterLink to="/" class="nav__link" @click="mobileOpen = false">{{ t('nav.home') }}</RouterLink>
+          <RouterLink to="/products" class="nav__link" @click="mobileOpen = false">{{ t('nav.products') }}</RouterLink>
+          <RouterLink to="/promotions" class="nav__link nav__link--hot" @click="mobileOpen = false">{{ t('nav.promotions') }}</RouterLink>
         </div>
 
         <div v-if="auth.user" class="nav__secondary">
-          <RouterLink to="/cart" class="nav__link" @click="mobileOpen = false">Cart</RouterLink>
-          <RouterLink to="/wishlist" class="nav__link" @click="mobileOpen = false">Wishlist</RouterLink>
-          <RouterLink to="/orders" class="nav__link" @click="mobileOpen = false">Orders</RouterLink>
+          <RouterLink to="/cart" class="nav__link" @click="mobileOpen = false">{{ t('nav.cart') }}</RouterLink>
+          <RouterLink to="/wishlist" class="nav__link" @click="mobileOpen = false">{{ t('nav.wishlist') }}</RouterLink>
+          <RouterLink to="/orders" class="nav__link" @click="mobileOpen = false">{{ t('nav.orders') }}</RouterLink>
         </div>
       </nav>
 
       <div class="nav-actions">
+        <div class="dropdown-wrapper">
+          <button class="btn-lang" type="button" @click="showLang = !showLang" :title="t('nav.language')">
+            {{ locale === 'en' ? 'EN' : 'KH' }}
+          </button>
+          <div v-if="showLang" class="dropdown-menu-lang" @click="showLang = false">
+            <button :class="{ active: locale === 'en' }" @click="setLocale('en')">🇬🇧 English</button>
+            <button :class="{ active: locale === 'km' }" @click="setLocale('km')">🇰🇭 ភាសាខ្មែរ</button>
+          </div>
+        </div>
         <template v-if="auth.user">
           <NotificationBell />
           <div class="nav-user">
@@ -70,7 +90,7 @@ async function handleLogout() {
               <img v-if="auth.user.image_url" :src="auth.user.image_url" :alt="auth.user.name" class="nav-user__img">
               <span v-else class="nav-user__initials">{{ initials }}</span>
             </RouterLink>
-            <button class="nav-logout" type="button" @click="confirmLogout" title="Sign out">
+            <button class="nav-logout" type="button" @click="confirmLogout" :title="t('nav.logout')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                 <polyline points="16 17 21 12 16 7" />
@@ -80,8 +100,8 @@ async function handleLogout() {
           </div>
         </template>
         <template v-else>
-          <RouterLink class="button button--ghost button--sm" to="/login">Login</RouterLink>
-          <RouterLink class="button button--sm" to="/register">Register</RouterLink>
+          <RouterLink class="button button--ghost button--sm" to="/login">{{ t('nav.login') }}</RouterLink>
+          <RouterLink class="button button--sm" to="/register">{{ t('nav.register') }}</RouterLink>
         </template>
       </div>
     </div>
@@ -89,20 +109,30 @@ async function handleLogout() {
 
   <nav class="nav-mobile" :class="{ 'nav-mobile--open': mobileOpen }">
     <div class="nav__primary">
-      <RouterLink to="/" class="nav__link" @click="mobileOpen = false">Home</RouterLink>
-      <RouterLink to="/products" class="nav__link" @click="mobileOpen = false">Products</RouterLink>
-      <RouterLink to="/promotions" class="nav__link nav__link--hot" @click="mobileOpen = false">Promotions</RouterLink>
+      <RouterLink to="/" class="nav__link" @click="mobileOpen = false">{{ t('nav.home') }}</RouterLink>
+      <RouterLink to="/products" class="nav__link" @click="mobileOpen = false">{{ t('nav.products') }}</RouterLink>
+      <RouterLink to="/promotions" class="nav__link nav__link--hot" @click="mobileOpen = false">{{ t('nav.promotions') }}</RouterLink>
     </div>
 
     <div v-if="auth.user" class="nav__secondary">
-      <RouterLink to="/cart" class="nav__link" @click="mobileOpen = false">Cart</RouterLink>
-      <RouterLink to="/wishlist" class="nav__link" @click="mobileOpen = false">Wishlist</RouterLink>
-      <RouterLink to="/orders" class="nav__link" @click="mobileOpen = false">Orders</RouterLink>
-        </div>
+      <RouterLink to="/cart" class="nav__link" @click="mobileOpen = false">{{ t('nav.cart') }}</RouterLink>
+      <RouterLink to="/wishlist" class="nav__link" @click="mobileOpen = false">{{ t('nav.wishlist') }}</RouterLink>
+      <RouterLink to="/orders" class="nav__link" @click="mobileOpen = false">{{ t('nav.orders') }}</RouterLink>
+    </div>
 
-        <div v-if="!auth.user" class="nav__secondary">
-      <RouterLink to="/login" class="nav__link" @click="mobileOpen = false">Login</RouterLink>
-      <RouterLink to="/register" class="nav__link" @click="mobileOpen = false">Register</RouterLink>
+    <div v-if="!auth.user" class="nav__secondary">
+      <RouterLink to="/login" class="nav__link" @click="mobileOpen = false">{{ t('nav.login') }}</RouterLink>
+      <RouterLink to="/register" class="nav__link" @click="mobileOpen = false">{{ t('nav.register') }}</RouterLink>
+    </div>
+
+    <div class="nav__secondary" style="padding-top:4px;margin-top:4px">
+      <span style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;padding:6px 16px 2px">{{ t('nav.language') }}</span>
+      <button class="nav__link" :class="{ 'active-lang': locale === 'en' }" style="width:100%;text-align:left;background:none;border:none;cursor:pointer" @click="setLocale('en'); mobileOpen = false">
+        🇬🇧 English
+      </button>
+      <button class="nav__link" :class="{ 'active-lang': locale === 'km' }" style="width:100%;text-align:left;background:none;border:none;cursor:pointer" @click="setLocale('km'); mobileOpen = false">
+        🇰🇭 ភាសាខ្មែរ
+      </button>
     </div>
   </nav>
 
@@ -281,6 +311,11 @@ async function handleLogout() {
   background: rgba(220, 38, 38, 0.08);
 }
 
+.active-lang {
+  color: var(--accent) !important;
+  font-weight: 700 !important;
+}
+
 .nav__link--hot:global(.router-link-exact-active) {
   color: #dc2626;
   background: rgba(220, 38, 38, 0.08);
@@ -347,6 +382,73 @@ async function handleLogout() {
 .nav-logout:hover {
   background: rgba(239, 68, 68, 0.1);
   color: #dc2626;
+}
+
+.dropdown-wrapper {
+  position: relative;
+}
+
+.btn-lang {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-lang:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.dropdown-menu-lang {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  min-width: 140px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.dropdown-menu-lang button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+}
+
+.dropdown-menu-lang button:hover {
+  background: var(--accent-soft);
+}
+
+.dropdown-menu-lang button.active {
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 @media (max-width: 768px) {

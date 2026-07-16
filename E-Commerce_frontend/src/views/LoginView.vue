@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { login } from '@/stores/auth';
 import api from '@/api/axios';
 import logoUrl from '@/assets/logo.png';
+import { useLocale } from '@/composables/useLocale';
 
 const router = useRouter();
 const route = useRoute();
@@ -22,6 +23,8 @@ const errors = reactive({
   email: '',
   password: '',
 });
+
+const { t } = useLocale();
 
 function validateForm() {
   let valid = true;
@@ -141,15 +144,15 @@ async function socialLogin(provider) {
 
         <!-- Copyright -->
         <div class="flex-shrink-0 text-center lg:text-left">
-          <p class="text-sm text-gray-400">&copy; 2026 E-Commerce. All rights reserved.</p>
+          <p class="text-sm text-gray-400">&copy; 2026 {{ t('products.title') }}. {{ t('general.no_data') }}</p>
         </div>
       </div>
 
       <!-- Right Column - Form -->
       <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
         <!-- Heading -->
-        <h1 class="text-[#0F172A] text-[36px] lg:text-[44px] font-bold leading-tight">Welcome Back!</h1>
-        <p class="text-gray-400 mt-2 text-lg">Login to continue</p>
+        <h1 class="text-[#0F172A] text-[36px] lg:text-[44px] font-bold leading-tight">{{ t('auth.login_title') }}</h1>
+        <p class="text-gray-400 mt-2 text-lg">{{ t('auth.login_title') }}</p>
 
         <!-- Form -->
         <form @submit.prevent="handleSubmit" class="mt-8 space-y-5" novalidate>
@@ -162,7 +165,7 @@ async function socialLogin(provider) {
                   <circle cx="12" cy="7" r="4" />
                 </svg>
               </span>
-              <input v-model="form.email" type="email" placeholder="Enter your email"
+              <input v-model="form.email" type="email" :placeholder="t('auth.email')"
                 class="w-full h-[55px] pl-12 pr-4 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
                 @input="errors.email = ''">
             </div>
@@ -178,12 +181,12 @@ async function socialLogin(provider) {
                   <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
               </span>
-              <input v-model="form.password" :type="showPassword ? 'text' : 'password'" placeholder="Enter your password"
+              <input v-model="form.password" :type="showPassword ? 'text' : 'password'" :placeholder="t('auth.password')"
                 class="w-full h-[55px] pl-12 pr-12 border border-gray-200 rounded-[14px] text-[#1E293B] placeholder-gray-400 outline-none transition-all duration-300 focus:border-[#22c55e] focus:ring-4 focus:ring-[#22c55e]/10 bg-white text-[15px]"
                 @input="errors.password = ''">
               <button type="button" @click="showPassword = !showPassword"
                 class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition-colors duration-300"
-                :aria-label="showPassword ? 'Hide password' : 'Show password'">
+                :aria-label="showPassword ? t('general.cancel') : t('general.view')">
                 <svg v-if="showPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
                   <line x1="1" y1="1" x2="23" y2="23" />
@@ -205,9 +208,9 @@ async function socialLogin(provider) {
             <label class="flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" v-model="rememberMe"
                 class="w-4 h-4 rounded border-gray-300 text-[#22c55e] focus:ring-[#22c55e] accent-[#22c55e]">
-              <span class="text-sm text-[#64748B]">Remember Me</span>
+              <span class="text-sm text-[#64748B]">{{ t('general.save') }}</span>
             </label>
-            <RouterLink to="/forgot-password" class="text-sm font-semibold text-[#22c55e] hover:text-[#16a34a] transition-colors duration-300">Forgot Password?</RouterLink>
+            <RouterLink to="/forgot-password" class="text-sm font-semibold text-[#22c55e] hover:text-[#16a34a] transition-colors duration-300">{{ t('auth.forgot_password') }}</RouterLink>
           </div>
 
           <!-- Submit -->
@@ -218,7 +221,7 @@ async function socialLogin(provider) {
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
             <template v-else>
-              <span>Sign In</span>
+              <span>{{ t('auth.login_btn') }}</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -230,7 +233,7 @@ async function socialLogin(provider) {
         <!-- Social login -->
         <div class="mt-6 flex items-center gap-3">
           <span class="flex-1 h-px bg-gray-200"></span>
-          <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Or continue with</span>
+          <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">{{ t('general.no_data') }}</span>
           <span class="flex-1 h-px bg-gray-200"></span>
         </div>
         <div class="mt-4 grid grid-cols-2 gap-3">
@@ -244,26 +247,26 @@ async function socialLogin(provider) {
             </svg>
             Google
           </button>
-          <button type="button" @click="socialLogin('facebook')"
+          <button type="button" @click="socialLogin('github')"
             class="flex items-center justify-center gap-3 h-[50px] border border-gray-200 rounded-[14px] text-sm font-semibold text-[#1E293B] bg-white hover:bg-gray-50 hover:shadow-md transition-all duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#1B1F23">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
             </svg>
-            Facebook
+            GitHub
           </button>
         </div>
 
         <!-- Register link -->
         <p class="mt-6 text-center text-sm text-[#64748B]">
-          Don't have an account?
-          <RouterLink to="/register" class="font-semibold text-[#22c55e] hover:text-[#16a34a] transition-colors duration-300">Sign Up</RouterLink>
+          {{ t('auth.no_account') }}
+          <RouterLink to="/register" class="font-semibold text-[#22c55e] hover:text-[#16a34a] transition-colors duration-300">{{ t('auth.register_btn') }}</RouterLink>
         </p>
 
         <!-- Bottom links -->
         <div class="mt-8 pt-6 border-t border-gray-100 flex items-center justify-center gap-4 text-xs text-gray-400">
-          <a href="#" class="hover:text-gray-600 transition-colors duration-300">Terms &amp; Conditions</a>
+          <a href="#" class="hover:text-gray-600 transition-colors duration-300">{{ t('general.submit') }}</a>
           <span class="text-gray-300">|</span>
-          <a href="#" class="hover:text-gray-600 transition-colors duration-300">Privacy Policy</a>
+          <a href="#" class="hover:text-gray-600 transition-colors duration-300">{{ t('general.submit') }}</a>
         </div>
       </div>
     </div>

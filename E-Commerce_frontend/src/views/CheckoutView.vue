@@ -6,6 +6,7 @@ import { clearCart, fetchCart, useCart } from '@/stores/cart';
 import api from '@/api/axios';
 import { formatCurrency } from '@/utils/format';
 import ConfirmModal from '@/components/ConfirmModal.vue';
+import { useLocale } from '@/composables/useLocale';
 
 const router = useRouter();
 const auth = useAuth();
@@ -72,6 +73,8 @@ const totalSavings = computed(() => {
   return saved > 0 ? formatCurrency(saved) : null;
 });
 
+const { t } = useLocale();
+
 onMounted(async () => {
   await loadProfile();
   await fetchCart();
@@ -108,18 +111,18 @@ async function handleSubmit() {
   <div class="page">
     <section class="checkout-grid">
       <div class="panel">
-        <p class="eyebrow">Checkout</p>
-        <h2>Shipping</h2>
+        <p class="eyebrow">{{ t('checkout.title') }}</p>
+        <h2>{{ t('checkout.shipping') }}</h2>
 
         <form class="auth-form" @submit.prevent="confirmOrder">
           <template v-if="hasProfile">
             <div class="info-display">
               <div class="info-row">
-                <span class="info-label">Phone</span>
+                <span class="info-label">{{ t('auth.email') }}</span>
                 <span class="info-value">{{ form.phone }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Address</span>
+                <span class="info-label">{{ t('checkout.shipping') }}</span>
                 <span class="info-value">{{ form.shipping_address }}</span>
               </div>
             </div>
@@ -127,20 +130,20 @@ async function handleSubmit() {
             <input v-model="form.shipping_address" type="hidden">
           </template>
           <template v-else>
-            <p class="text-muted small mb-2" style="color: #dc2626;">Please fill in your shipping details to continue.</p>
-            <input v-model="form.phone" class="input" type="text" placeholder="Phone number" required>
-            <textarea v-model="form.shipping_address" class="textarea" rows="3" placeholder="Shipping address" required></textarea>
+            <p class="text-muted small mb-2" style="color: #dc2626;">{{ t('general.no_data') }}</p>
+            <input v-model="form.phone" class="input" type="text" :placeholder="t('auth.email')" required>
+            <textarea v-model="form.shipping_address" class="textarea" rows="3" :placeholder="t('checkout.shipping')" required></textarea>
           </template>
           <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
           <button class="button" type="submit" :disabled="submitting || !form.phone || !form.shipping_address">
-            {{ submitting ? 'Processing...' : 'Place order' }}
+            {{ submitting ? t('general.loading') : t('checkout.place_order') }}
           </button>
         </form>
       </div>
 
       <aside class="panel">
-        <p class="eyebrow">Order summary</p>
-        <h2>{{ cartState.items.length }} items</h2>
+        <p class="eyebrow">{{ t('checkout.order_summary') }}</p>
+        <h2>{{ cartState.items.length }} {{ t('products.title') }}</h2>
         <div class="stack stack--tight">
           <div v-for="item in cartState.items" :key="item.id" class="summary-line">
             <span class="summary-line__name">{{ item.product.name }} x {{ item.quantity }}</span>
@@ -158,20 +161,20 @@ async function handleSubmit() {
           <span class="summary-line__amount" style="color: #16a34a;">-{{ formatCurrency(discountAmount) }}</span>
         </div>
         <div class="summary-total">
-          <span>Total</span>
+          <span>{{ t('cart.total') }}</span>
           <strong>{{ discount ? finalTotal : total }}</strong>
         </div>
         <div v-if="totalSavings" class="summary-savings">
-          You save <strong>{{ totalSavings }}</strong>
+          {{ t('general.no_data') }} <strong>{{ totalSavings }}</strong>
         </div>
       </aside>
     </section>
 
     <ConfirmModal
       :show="showConfirmModal"
-      title="Place order"
-      message="Ready to complete your order? You'll be charged the total amount shown."
-      confirm-text="Place order"
+      :title="t('checkout.place_order')"
+      :message="t('checkout.order_summary')"
+      :confirm-text="t('checkout.place_order')"
       :loading="submitting"
       @confirm="handleSubmit"
       @cancel="showConfirmModal = false"

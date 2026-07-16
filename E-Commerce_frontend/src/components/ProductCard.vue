@@ -213,13 +213,13 @@ const outOfStock = computed(() => !props.product?.stock || props.product.stock <
   align-items: center;
   justify-content: center;
   width: 40px;
-  height: 24px;
+  height: 36px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 10px;
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
+  transition: all 0.18s ease;
   text-decoration: none;
   flex-shrink: 0;
 }
@@ -228,11 +228,12 @@ const outOfStock = computed(() => !props.product?.stock || props.product.stock <
   background: var(--accent-soft);
   color: var(--accent);
   border-color: var(--accent);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .btn-icon:active {
-  transform: translateY(0) scale(0.95);
+  transform: translateY(0) scale(0.93);
 }
 
 .btn-icon:disabled {
@@ -240,20 +241,22 @@ const outOfStock = computed(() => !props.product?.stock || props.product.stock <
   cursor: not-allowed;
   pointer-events: none;
   transform: none;
+  box-shadow: none;
 }
 
 .btn-icon--cart {
   background: linear-gradient(135deg, #22c55e, #16a34a);
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 4px 12px -4px rgba(34, 197, 94, 0.4);
+  box-shadow: 0 4px 14px -4px rgba(34, 197, 94, 0.4);
 }
 
 .btn-icon--cart:hover {
-  opacity: 0.9;
+  opacity: 0.92;
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 6px 20px -4px rgba(34, 197, 94, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -4px rgba(34, 197, 94, 0.5);
 }
 
 .btn-icon--wish:hover {

@@ -8,7 +8,13 @@ const state = reactive({
   meta: {
     current_page: 1,
     last_page: 1,
-    per_page: 12,
+    per_page: 9,
+    total: 0,
+  },
+  categoryMeta: {
+    current_page: 1,
+    last_page: 1,
+    per_page: 10,
     total: 0,
   },
   filters: {
@@ -25,9 +31,10 @@ export function useProduct() {
   return state;
 }
 
-export async function fetchCategories() {
-  const { data } = await api.get('/categories');
+export async function fetchCategories(params = {}) {
+  const { data } = await api.get('/categories', { params });
   state.categories = data.data;
+  state.categoryMeta = data.meta;
   return state.categories;
 }
 

@@ -3,6 +3,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import api from '@/api/axios';
 import { useAuth } from '@/stores/auth';
+import { useLocale } from '@/composables/useLocale';
 
 const auth = useAuth();
 const loading = ref(false);
@@ -46,6 +47,8 @@ const joinedDate = computed(() => {
   if (!auth.user?.created_at) return '';
   return new Date(auth.user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 });
+
+const { t } = useLocale();
 
 async function loadProfile() {
   loading.value = true;
@@ -137,22 +140,22 @@ onMounted(async () => {
         <div class="stat-item">
           <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           <span class="stat-value">{{ summary.orders }}</span>
-          <span class="stat-label">Orders</span>
+          <span class="stat-label">{{ t('orders.title') }}</span>
         </div>
         <div class="stat-item">
           <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           <span class="stat-value">{{ summary.wishlist }}</span>
-          <span class="stat-label">Wishlist</span>
+          <span class="stat-label">{{ t('wishlist.title') }}</span>
         </div>
         <div class="stat-item">
           <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           <span class="stat-value">{{ summary.cart }}</span>
-          <span class="stat-label">Cart</span>
+          <span class="stat-label">{{ t('cart.title') }}</span>
         </div>
         <div class="stat-item">
           <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           <span class="stat-value">{{ summary.reviews }}</span>
-          <span class="stat-label">Reviews</span>
+          <span class="stat-label">{{ t('product.reviews') }}</span>
         </div>
       </div>
 
@@ -165,18 +168,18 @@ onMounted(async () => {
           </div>
         </div>
         <h1 class="profile-name">{{ auth.user?.name ?? 'User' }}</h1>
-        <p class="profile-role">{{ auth.user?.role === 'admin' ? 'Administrator' : 'Customer' }}</p>
+        <p class="profile-role">{{ auth.user?.role === 'admin' ? t('profile.title') : t('profile.title') }}</p>
         <input ref="imageInput" class="hidden-file-input" type="file" accept="image/*" @change="handleImageChange">
       </div>
 
       <div class="profile-bar__actions">
-        <RouterLink class="action-btn" to="/orders" title="Orders">
+        <RouterLink class="action-btn" to="/orders" :title="t('orders.title')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
         </RouterLink>
-        <RouterLink class="action-btn" to="/wishlist" title="Wishlist">
+        <RouterLink class="action-btn" to="/wishlist" :title="t('wishlist.title')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
         </RouterLink>
-        <button class="action-btn-primary" type="button" @click="activeTab = 'edit'" title="Edit Profile">
+        <button class="action-btn-primary" type="button" @click="activeTab = 'edit'" :title="t('profile.update')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         </button>
       </div>
@@ -187,19 +190,19 @@ onMounted(async () => {
       <div class="tabs">
         <button class="tab" :class="{ active: activeTab === 'profile' }" @click="activeTab = 'profile'">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Profile
+          {{ t('profile.personal') }}
         </button>
         <button class="tab" :class="{ active: activeTab === 'orders' }" @click="activeTab = 'orders'">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
-          Orders
+          {{ t('orders.title') }}
         </button>
         <button class="tab" :class="{ active: activeTab === 'wishlist' }" @click="activeTab = 'wishlist'">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          Wishlist
+          {{ t('wishlist.title') }}
         </button>
         <button class="tab" :class="{ active: activeTab === 'edit' }" @click="activeTab = 'edit'">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-          Settings
+          {{ t('profile.update') }}
         </button>
       </div>
     </div>
@@ -214,9 +217,9 @@ onMounted(async () => {
             <div class="card">
               <h3 class="card-title">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                Introduction
+                {{ t('profile.personal') }}
               </h3>
-              <p class="card-text">Passionate about discovering great products. Member since {{ joinedDate }}.</p>
+              <p class="card-text">{{ t('general.no_data') }} {{ joinedDate }}.</p>
               <div class="info-rows">
                 <div class="info-row">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
@@ -232,7 +235,7 @@ onMounted(async () => {
                 </div>
                 <div class="info-row">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <span>Joined {{ joinedDate }}</span>
+                  <span>{{ t('general.no_data') }} {{ joinedDate }}</span>
                 </div>
               </div>
             </div>
@@ -240,24 +243,24 @@ onMounted(async () => {
             <div class="card stats-card">
               <h3 class="card-title">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                Activity
+                {{ t('orders.title') }}
               </h3>
               <div class="stats-grid">
                 <div class="mini-stat">
                   <span class="mini-stat__value">{{ summary.orders }}</span>
-                  <span class="mini-stat__label">Orders</span>
+                  <span class="mini-stat__label">{{ t('orders.title') }}</span>
                 </div>
                 <div class="mini-stat">
                   <span class="mini-stat__value">{{ summary.wishlist }}</span>
-                  <span class="mini-stat__label">Saved</span>
+                  <span class="mini-stat__label">{{ t('wishlist.title') }}</span>
                 </div>
                 <div class="mini-stat">
                   <span class="mini-stat__value">{{ summary.cart }}</span>
-                  <span class="mini-stat__label">In Cart</span>
+                  <span class="mini-stat__label">{{ t('cart.title') }}</span>
                 </div>
                 <div class="mini-stat">
                   <span class="mini-stat__value">{{ summary.reviews }}</span>
-                  <span class="mini-stat__label">Reviews</span>
+                  <span class="mini-stat__label">{{ t('product.reviews') }}</span>
                 </div>
               </div>
             </div>
@@ -267,22 +270,22 @@ onMounted(async () => {
             <!-- Composer -->
             <div class="card composer-card">
               <RouterLink to="/products" class="composer-input">
-                <span>Browse products and find something you love...</span>
+                <span>{{ t('products.empty_hint') }}</span>
               </RouterLink>
               <div class="composer-actions">
                 <RouterLink to="/orders" class="composer-btn">
                   <span class="badge-icon badge-icon--teal">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
                   </span>
-                  My Orders
+                  {{ t('orders.title') }}
                 </RouterLink>
                 <RouterLink to="/wishlist" class="composer-btn">
                   <span class="badge-icon badge-icon--indigo">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                   </span>
-                  Wishlist
+                  {{ t('wishlist.title') }}
                 </RouterLink>
-                <RouterLink to="/cart" class="btn-primary btn-small">View Cart</RouterLink>
+                <RouterLink to="/cart" class="btn-primary btn-small">{{ t('general.view') }}</RouterLink>
               </div>
             </div>
 
@@ -304,13 +307,13 @@ onMounted(async () => {
                 <span v-for="item in order.items?.slice(0, 3)" :key="item.id" class="post-item-chip">
                   {{ item.product?.name ?? 'Product' }} x{{ item.quantity }}
                 </span>
-                <span v-if="order.items?.length > 3" class="post-item-chip post-item-chip--more">+{{ order.items.length - 3 }} more</span>
+                <span v-if="order.items?.length > 3" class="post-item-chip post-item-chip--more">+{{ order.items.length - 3 }} {{ t('general.view') }}</span>
               </div>
             </div>
 
             <div v-if="!recentOrders.length" class="card empty-card">
-              <p>No recent orders yet. Start shopping!</p>
-              <RouterLink to="/products" class="btn-primary">Browse Products</RouterLink>
+              <p>{{ t('orders.empty_hint') }}</p>
+              <RouterLink to="/products" class="btn-primary">{{ t('home.shop_now') }}</RouterLink>
             </div>
           </main>
         </div>
@@ -320,10 +323,10 @@ onMounted(async () => {
       <template v-if="activeTab === 'orders'">
         <div class="card">
           <div class="d-flex align-items-center justify-content-between mb-3">
-            <h3 class="card-title mb-0">Order History</h3>
-            <RouterLink class="btn-primary btn-small" to="/orders">View All</RouterLink>
+            <h3 class="card-title mb-0">{{ t('orders.title') }}</h3>
+            <RouterLink class="btn-primary btn-small" to="/orders">{{ t('general.view') }}</RouterLink>
           </div>
-          <p class="card-text">You have placed <strong>{{ summary.orders }}</strong> orders so far.</p>
+          <p class="card-text">{{ t('general.no_data') }} <strong>{{ summary.orders }}</strong> {{ t('orders.title') }}.</p>
         </div>
       </template>
 
@@ -331,10 +334,10 @@ onMounted(async () => {
       <template v-if="activeTab === 'wishlist'">
         <div class="card">
           <div class="d-flex align-items-center justify-content-between mb-3">
-            <h3 class="card-title mb-0">Saved Items</h3>
-            <RouterLink class="btn-primary btn-small" to="/wishlist">View All</RouterLink>
+            <h3 class="card-title mb-0">{{ t('wishlist.title') }}</h3>
+            <RouterLink class="btn-primary btn-small" to="/wishlist">{{ t('general.view') }}</RouterLink>
           </div>
-          <p class="card-text">You have <strong>{{ summary.wishlist }}</strong> items saved in your wishlist.</p>
+          <p class="card-text">{{ t('general.no_data') }} <strong>{{ summary.wishlist }}</strong> {{ t('wishlist.title') }}.</p>
         </div>
       </template>
 
@@ -344,21 +347,21 @@ onMounted(async () => {
           <div class="card edit-card">
             <h3 class="card-title">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-              Edit Profile
+              {{ t('profile.update') }}
             </h3>
 
             <form @submit.prevent="handleSubmit">
               <div class="edit-avatar-row">
                 <div class="edit-avatar" @click="openImagePicker">
-                  <img v-if="avatarPreview || avatarUrl" :src="avatarPreview || avatarUrl" alt="Profile" class="edit-avatar-img">
+                  <img v-if="avatarPreview || avatarUrl" :src="avatarPreview || avatarUrl" :alt="t('profile.title')" class="edit-avatar-img">
                   <div v-else class="edit-avatar-placeholder">{{ initials }}</div>
-                  <div class="edit-avatar-overlay">Change</div>
+                  <div class="edit-avatar-overlay">{{ t('profile.update') }}</div>
                 </div>
                 <div class="edit-avatar-btns">
-                  <button class="avatar-icon-btn" type="button" @click="openImagePicker" title="Upload photo">
+                  <button class="avatar-icon-btn" type="button" @click="openImagePicker" :title="t('general.save')">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                   </button>
-                  <button v-if="avatarPreview || avatarUrl" class="avatar-icon-btn avatar-icon-btn--remove" type="button" @click="removeImage" title="Remove photo">
+                  <button v-if="avatarPreview || avatarUrl" class="avatar-icon-btn avatar-icon-btn--remove" type="button" @click="removeImage" :title="t('general.delete')">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                   </button>
                 </div>
@@ -366,19 +369,19 @@ onMounted(async () => {
 
               <div class="form-fields">
                 <div>
-                  <label class="field-label">Full Name</label>
+                  <label class="field-label">{{ t('profile.personal') }}</label>
                   <input v-model="form.name" class="field-input" type="text" required>
                 </div>
                 <div>
-                  <label class="field-label">Email</label>
+                  <label class="field-label">{{ t('auth.email') }}</label>
                   <input :value="email" class="field-input" type="email" disabled>
                 </div>
                 <div>
-                  <label class="field-label">Phone</label>
+                  <label class="field-label">{{ t('auth.email') }}</label>
                   <input v-model="form.phone" class="field-input" type="text">
                 </div>
                 <div>
-                  <label class="field-label">Address</label>
+                  <label class="field-label">{{ t('checkout.shipping') }}</label>
                   <textarea v-model="form.address" class="field-input" rows="3"></textarea>
                 </div>
               </div>
@@ -388,9 +391,9 @@ onMounted(async () => {
 
               <div class="edit-actions">
                 <button class="btn-primary" type="submit" :disabled="saving">
-                  {{ saving ? 'Saving...' : 'Save Changes' }}
+                  {{ saving ? t('general.loading') : t('general.save') }}
                 </button>
-                <button class="btn-ghost" type="button" @click="activeTab = 'profile'" title="Cancel">
+                <button class="btn-ghost" type="button" @click="activeTab = 'profile'" :title="t('general.cancel')">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
               </div>

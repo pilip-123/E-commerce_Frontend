@@ -1,15 +1,17 @@
 <script setup>
-import { computed, onMounted, onUnmounted, reactive } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import ProductCard from '@/components/ProductCard.vue';
 import { addToCart } from '@/stores/cart';
 import { addToWishlist } from '@/stores/wishlist';
 import { fetchCategories, fetchProducts, useProduct } from '@/stores/product';
 import { useAuth } from '@/stores/auth';
+import { useLocale } from '@/composables/useLocale';
 
 const router = useRouter();
 const productState = useProduct();
 const auth = useAuth();
+const { t } = useLocale();
 
 const filters = reactive({
   search: '',
@@ -18,11 +20,19 @@ const filters = reactive({
   max_price: '',
 });
 
+const currentPage = ref(1);
 const hasFilters = computed(() => filters.search || filters.category_id || filters.min_price || filters.max_price);
 
-async function loadProducts() {
-  const params = { ...filters, per_page: 12, status: 1 };
+async function loadProducts(page = 1) {
+  currentPage.value = page;
+  const params = { ...filters, page, per_page: 9, status: 1 };
   await fetchProducts(params);
+}
+
+function goToPage(page) {
+  if (page < 1 || page > productState.meta.last_page) return;
+  loadProducts(page);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 async function loadCatalog() {
@@ -39,7 +49,7 @@ async function handleReset() {
   filters.category_id = '';
   filters.min_price = '';
   filters.max_price = '';
-  await loadProducts();
+  await loadProducts(1);
 }
 
 async function handleAddToCart(product) {
@@ -77,14 +87,14 @@ onUnmounted(() => {
     <!-- Header -->
     <section class="catalog-header">
       <div class="catalog-header__content">
-        <p class="eyebrow">Catalog</p>
-        <h1>Products</h1>
-        <p class="catalog-header__lead">Browse our full collection. Filter by category or price to find exactly what you need.</p>
+        <p class="eyebrow">{{ t('products.catalog') }}</p>
+        <h1>{{ t('products.title') }}</h1>
+        <p class="catalog-header__lead">{{ t('products.subtitle') }}</p>
       </div>
       <div class="catalog-header__stats">
         <div class="catalog-stat">
           <span class="catalog-stat__value">{{ productState.meta.total }}</span>
-          <span class="catalog-stat__label">Products</span>
+          <span class="catalog-stat__label">{{ t('products.count') }}</span>
         </div>
         <div class="catalog-stat">
           <span class="catalog-stat__value">{{ productState.categories.length }}</span>
@@ -94,39 +104,59 @@ onUnmounted(() => {
     </section>
 
     <!-- Filters -->
-    <section class="filters-section">
-      <form class="filters-form" @submit.prevent="handleSubmit">
-        <div class="filters-form__row">
-          <input v-model="filters.search" class="input" type="search" placeholder="Search products...">
-          <select v-model="filters.category_id" class="input">
-            <option value="">All categories</option>
-            <option v-for="category in productState.categories" :key="category.id" :value="category.id">
-              {{ category.name }}
-            </option>
-          </select>
-          <input v-model="filters.min_price" class="input" type="number" step="0.01" placeholder="Min price">
-          <input v-model="filters.max_price" class="input" type="number" step="0.01" placeholder="Max price">
-        </div>
-        <div class="filters-form__actions flex-col sm:flex-row">
-          <button class="btn-icon-filter btn-icon-filter--search" type="submit" title="Search">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+    <section class="filter-bar">
+      <form class="filter-bar__form" @submit.prevent="handleSubmit">
+        <div class="filter-bar__fields">
+          <div class="filter-field filter-field--search">
+            <svg class="filter-field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
+            <input v-model="filters.search" class="filter-field__input" type="search" :placeholder="t('products.search_placeholder')">
+          </div>
+          <div class="filter-field">
+            <select v-model="filters.category_id" class="filter-field__input">
+              <option value="">{{ t('products.all_categories') }}</option>
+              <option v-for="category in productState.categories" :key="category.id" :value="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+          <div class="filter-field filter-field--price">
+            <span class="filter-field__prefix">$</span>
+            <input v-model="filters.min_price" class="filter-field__input" type="number" step="0.01" :placeholder="t('products.min_price')">
+          </div>
+          <div class="filter-field filter-field--price">
+            <span class="filter-field__prefix">$</span>
+            <input v-model="filters.max_price" class="filter-field__input" type="number" step="0.01" :placeholder="t('products.max_price')">
+          </div>
+          <button class="filter-bar__btn filter-bar__btn--apply" type="submit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
+              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            {{ t('products.search_btn') }}
           </button>
-          <button v-if="hasFilters" class="btn-icon-filter btn-icon-filter--clear" type="button" @click="handleReset" title="Clear filters">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+          <button v-if="hasFilters" class="filter-bar__btn filter-bar__btn--clear" type="button" @click="handleReset">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
+            {{ t('products.clear_btn') }}
           </button>
         </div>
       </form>
+      <div v-if="hasFilters" class="filter-bar__tags">
+        <span class="filter-tag" v-if="filters.search">"{{ filters.search }}" <button class="filter-tag__remove" @click="filters.search = ''; handleSubmit()">×</button></span>
+        <span class="filter-tag" v-if="filters.category_id">{{ productState.categories.find(c => c.id == filters.category_id)?.name }} <button class="filter-tag__remove" @click="filters.category_id = ''; handleSubmit()">×</button></span>
+        <span class="filter-tag" v-if="filters.min_price">${{ filters.min_price }}+ <button class="filter-tag__remove" @click="filters.min_price = ''; handleSubmit()">×</button></span>
+        <span class="filter-tag" v-if="filters.max_price">≤ ${{ filters.max_price }} <button class="filter-tag__remove" @click="filters.max_price = ''; handleSubmit()">×</button></span>
+        <button class="filter-bar__clear-all" @click="handleReset">{{ t('products.clear_all') }}</button>
+      </div>
     </section>
 
     <!-- Products Grid -->
     <section class="section">
       <div v-if="productState.loading" class="products-status">
         <div class="spinner" />
-        <p>Loading products...</p>
+        <p>{{ t('products.loading') }}</p>
       </div>
 
       <template v-else>
@@ -145,9 +175,25 @@ onUnmounted(() => {
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
-          <p class="products-empty__title">No products found</p>
-          <p class="products-empty__sub">Try adjusting your filters or search term.</p>
+          <p class="products-empty__title">{{ t('products.empty') }}</p>
+          <p class="products-empty__sub">{{ t('products.empty_hint') }}</p>
         </div>
+
+        <nav v-if="productState.meta.last_page > 1" class="pagination">
+          <button class="pagination__btn" :disabled="currentPage <= 1" @click="goToPage(currentPage - 1)">
+            {{ t('products.prev') }}
+          </button>
+          <button
+            v-for="p in productState.meta.last_page"
+            :key="p"
+            class="pagination__page"
+            :class="{ 'pagination__page--active': p === currentPage }"
+            @click="goToPage(p)"
+          >{{ p }}</button>
+          <button class="pagination__btn" :disabled="currentPage >= productState.meta.last_page" @click="goToPage(currentPage + 1)">
+            {{ t('products.next') }}
+          </button>
+        </nav>
       </template>
     </section>
   </div>
@@ -215,63 +261,192 @@ onUnmounted(() => {
   letter-spacing: 0.08em;
 }
 
-/* ─── Filters ─── */
-.filters-section {
+/* ─── Filter Bar ─── */
+.filter-bar {
   display: grid;
-  gap: 16px;
-}
-
-.filters-form {
-  display: grid;
-  gap: 12px;
-  padding: 20px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface-strong);
-}
-
-.filters-form__row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 120px 120px;
   gap: 10px;
 }
 
-.filters-form__actions {
-  display: flex;
-  gap: 8px;
+.filter-bar__form {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-strong);
+  padding: 16px 18px;
 }
 
-.btn-icon-filter {
+.filter-bar__fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-field {
+  position: relative;
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+.filter-field--search {
+  flex: 2 1 220px;
+}
+
+.filter-field--price {
+  flex: 0 1 100px;
+}
+
+.filter-field__icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.filter-field__prefix {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.filter-field__input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.filter-field--search .filter-field__input {
+  padding-left: 34px;
+}
+
+.filter-field--price .filter-field__input {
+  padding-left: 22px;
+}
+
+.filter-field__input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.filter-field__input::placeholder {
+  color: var(--muted);
+}
+
+select.filter-field__input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+.filter-bar__btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 24px;
+  gap: 6px;
+  padding: 8px 16px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.15s;
+  white-space: nowrap;
+  transition: all 0.15s;
 }
 
-.btn-icon-filter--search {
+.filter-bar__btn--apply {
   background: linear-gradient(135deg, #22c55e, #16a34a);
   color: #fff;
 }
 
-.btn-icon-filter--search:hover {
+.filter-bar__btn--apply:hover {
   opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
-.btn-icon-filter--clear {
+.filter-bar__btn--clear {
   background: transparent;
   border: 1px solid var(--line);
   color: var(--muted);
 }
 
-.btn-icon-filter--clear:hover {
+.filter-bar__btn--clear:hover {
   background: var(--accent-soft);
   color: var(--accent);
   border-color: var(--accent);
+}
+
+/* ─── Filter Tags ─── */
+.filter-bar__tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 0 2px;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.filter-tag__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--accent);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s;
+}
+
+.filter-tag__remove:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+.filter-bar__clear-all {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 2px 4px;
+  transition: color 0.15s;
+}
+
+.filter-bar__clear-all:hover {
+  color: var(--accent);
 }
 
 /* ─── Status ─── */
@@ -311,6 +486,67 @@ onUnmounted(() => {
   color: var(--muted);
 }
 
+/* ─── Pagination ─── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 32px 0 0;
+  flex-wrap: wrap;
+}
+
+.pagination__btn {
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pagination__btn:hover:not(:disabled) {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.pagination__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination__page {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pagination__page:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.pagination__page--active {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  border-color: transparent;
+}
+
 @media (max-width: 1024px) {
   .catalog-header {
     grid-template-columns: 1fr;
@@ -318,14 +554,19 @@ onUnmounted(() => {
   .catalog-header__stats {
     grid-template-columns: 1fr 1fr;
   }
-  .filters-form__row {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
-@media (max-width: 640px) {
-  .filters-form__row {
-    grid-template-columns: 1fr;
+@media (max-width: 720px) {
+  .filter-bar__fields {
+    flex-direction: column;
+  }
+  .filter-field {
+    flex: 1 1 auto !important;
+    width: 100%;
+  }
+  .filter-bar__btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>

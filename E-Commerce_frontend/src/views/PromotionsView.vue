@@ -6,6 +6,7 @@ import { addToCart } from '@/stores/cart';
 import { addToWishlist } from '@/stores/wishlist';
 import { useAuth } from '@/stores/auth';
 import { formatCurrency } from '@/utils/format';
+import { useLocale } from '@/composables/useLocale';
 
 const router = useRouter();
 const auth = useAuth();
@@ -65,6 +66,8 @@ function daysRemaining(endDate) {
 const totalPromotions = computed(() => state.promotions.length);
 const totalProducts = computed(() => state.promotions.reduce((sum, p) => sum + (p.products?.length ?? 0), 0));
 
+const { t } = useLocale();
+
 let refreshTimer;
 
 onMounted(() => {
@@ -81,18 +84,18 @@ onUnmounted(() => {
   <div class="page">
     <section class="promo-header">
       <div class="promo-header__content">
-        <p class="eyebrow">Deals</p>
-        <h1>Promotions</h1>
-        <p class="promo-header__lead">Check out our latest deals and discounts. Grab them before they expire!</p>
+        <p class="eyebrow">{{ t('promotions.title') }}</p>
+        <h1>{{ t('promotions.title') }}</h1>
+        <p class="promo-header__lead">{{ t('promotions.empty') }}</p>
       </div>
       <div class="promo-header__stats">
         <div class="promo-stat">
           <span class="promo-stat__value">{{ totalPromotions }}</span>
-          <span class="promo-stat__label">Active Promotions</span>
+          <span class="promo-stat__label">{{ t('promotions.title') }}</span>
         </div>
         <div class="promo-stat">
           <span class="promo-stat__value">{{ totalProducts }}</span>
-          <span class="promo-stat__label">Discounted Products</span>
+          <span class="promo-stat__label">{{ t('products.title') }}</span>
         </div>
       </div>
     </section>
@@ -100,7 +103,7 @@ onUnmounted(() => {
     <section v-if="state.loading" class="section">
       <div class="promo-status">
         <div class="spinner" />
-        <p>Loading promotions...</p>
+        <p>{{ t('general.loading') }}</p>
       </div>
     </section>
 
@@ -114,13 +117,13 @@ onUnmounted(() => {
             <div>
               <h2 class="promo-section__title">{{ promotion.name }}</h2>
               <p class="promo-section__meta">
-                <span class="promo-section__count">{{ promotion.products?.length ?? 0 }} product{{ (promotion.products?.length ?? 0) !== 1 ? 's' : '' }}</span>
+                <span class="promo-section__count">{{ promotion.products?.length ?? 0 }} {{ t('products.title') }}</span>
                 <span class="promo-section__divider">·</span>
                 <span class="promo-section__expiry">{{ daysRemaining(promotion.end_date) }}</span>
               </p>
             </div>
           </div>
-          <RouterLink class="promo-section__link" :to="{ name: 'products', query: { category_id: undefined } }">View all →</RouterLink>
+          <RouterLink class="promo-section__link" :to="{ name: 'products', query: { category_id: undefined } }">{{ t('general.view') }}</RouterLink>
         </div>
         <p v-if="promotion.description" class="promo-section__desc">{{ promotion.description }}</p>
 
@@ -128,9 +131,9 @@ onUnmounted(() => {
           <article v-for="product in promotion.products" :key="product.id" class="deal-card" :class="{ 'deal-card--oos': !product.stock || product.stock < 1 }" @click="goToProduct(product)">
             <div class="deal-card__image">
               <img v-if="product.image" :src="product.image" :alt="product.name" loading="lazy">
-              <div v-else class="deal-card__placeholder">No image</div>
+              <div v-else class="deal-card__placeholder">{{ t('general.no_data') }}</div>
               <span v-if="product.stock > 0" class="deal-card__badge">{{ discountLabel(promotion) }}</span>
-              <span v-else class="deal-card__badge deal-card__badge--oos">Out of stock</span>
+              <span v-else class="deal-card__badge deal-card__badge--oos">{{ t('product.out_of_stock') }}</span>
             </div>
             <div class="deal-card__body">
               <h3 class="deal-card__title">{{ product.name }}</h3>
@@ -139,13 +142,13 @@ onUnmounted(() => {
                 <strong class="deal-card__new">{{ formatCurrency(product.discount_price) }}</strong>
               </div>
               <div class="deal-card__actions">
-                <button class="deal-card__cart" type="button" :disabled="!product.stock || product.stock < 1" @click.stop="handleAddToCart(product)" title="Add to cart">
+                <button class="deal-card__cart" type="button" :disabled="!product.stock || product.stock < 1" @click.stop="handleAddToCart(product)" :title="t('product.add_to_cart')">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                     <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                   </svg>
                 </button>
-                <button class="deal-card__wish min-w-[44px] min-h-[44px]" type="button" @click.stop="handleAddToWishlist(product)" title="Save">
+                <button class="deal-card__wish min-w-[44px] min-h-[44px]" type="button" @click.stop="handleAddToWishlist(product)" :title="t('general.save')">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                   </svg>
@@ -155,7 +158,7 @@ onUnmounted(() => {
           </article>
         </div>
         <div v-else class="promo-section__empty">
-          <p>No products on this promotion yet.</p>
+          <p>{{ t('promotions.empty') }}</p>
         </div>
       </section>
     </template>
@@ -165,8 +168,8 @@ onUnmounted(() => {
         <svg class="promo-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" />
         </svg>
-        <p class="promo-empty__title">No active promotions</p>
-        <p class="promo-empty__sub">There are no promotions running right now. Check back later!</p>
+        <p class="promo-empty__title">{{ t('promotions.empty') }}</p>
+        <p class="promo-empty__sub">{{ t('promotions.empty') }}</p>
       </div>
     </section>
   </div>

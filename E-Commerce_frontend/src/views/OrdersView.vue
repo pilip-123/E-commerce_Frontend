@@ -4,13 +4,18 @@ import { RouterLink } from 'vue-router';
 import api from '@/api/axios';
 import { formatCurrency } from '@/utils/format';
 import RateOrderModal from '@/components/RateOrderModal.vue';
+import { useLocale } from '@/composables/useLocale';
 
 const orders = ref([]);
 const loading = ref(false);
+const currentPage = ref(1);
+const lastPage = ref(1);
+const totalOrdersCount = ref(0);
 const rateOrder = ref(null);
 const showRateModal = ref(false);
 const ratedOrderIds = ref(new Set());
 
+const { t } = useLocale();
 const statusConfig = {
   pending:    { bg: '#fef3c7', color: '#92400e', dot: '#f59e0b', label: 'Pending' },
   processing: { bg: '#dbeafe', color: '#1e40af', dot: '#3b82f6', label: 'Processing' },
@@ -25,17 +30,26 @@ function statusFor(val) {
   return statusConfig[val?.toLowerCase()] ?? defaultStatus;
 }
 
-const totalOrders = computed(() => orders.value.length);
+const totalOrders = computed(() => totalOrdersCount.value);
 
-async function loadOrders() {
+async function loadOrders(page = 1) {
   loading.value = true;
   try {
-    const { data } = await api.get('/orders');
+    const { data } = await api.get('/orders', { params: { page, per_page: 10 } });
     orders.value = data.data;
+    currentPage.value = data.meta.current_page;
+    lastPage.value = data.meta.last_page;
+    totalOrdersCount.value = data.meta.total;
     checkPendingRatings();
   } finally {
     loading.value = false;
   }
+}
+
+function goToPage(page) {
+  if (page < 1 || page > lastPage.value) return;
+  loadOrders(page);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function checkPendingRatings() {
@@ -71,27 +85,27 @@ function formatDate(date) {
   });
 }
 
-onMounted(loadOrders);
+onMounted(() => loadOrders(1));
 </script>
 
 <template>
   <div class="page">
     <section class="orders-header">
       <div class="orders-header__content">
-        <p class="eyebrow">Orders</p>
-        <h1>Order history</h1>
-        <p class="orders-header__lead">Track and review all your orders in one place.</p>
+        <p class="eyebrow">{{ t('nav.orders') }}</p>
+        <h1>{{ t('orders.title') }}</h1>
+        <p class="orders-header__lead">{{ t('orders.subtitle') }}</p>
       </div>
       <div class="orders-header__stats">
         <div class="orders-stat">
           <span class="orders-stat__value">{{ totalOrders }}</span>
-          <span class="orders-stat__label">Total orders</span>
+          <span class="orders-stat__label">{{ t('orders.total') }}</span>
         </div>
         <div class="orders-stat">
           <span class="orders-stat__value">
             {{ orders.filter(o => o.status === 'delivered').length }}
           </span>
-          <span class="orders-stat__label">Delivered</span>
+          <span class="orders-stat__label">{{ t('orders.delivered') }}</span>
         </div>
       </div>
     </section>
@@ -99,7 +113,7 @@ onMounted(loadOrders);
     <section class="section">
       <div v-if="loading" class="orders-status">
         <div class="spinner" />
-        <p>Loading orders...</p>
+        <p>{{ t('orders.loading') }}</p>
       </div>
 
       <template v-else>
@@ -109,9 +123,9 @@ onMounted(loadOrders);
             <line x1="3" y1="6" x2="21" y2="6" />
             <path d="M16 10a4 4 0 0 1-8 0" />
           </svg>
-          <p class="orders-empty__title">No orders yet</p>
-          <p class="orders-empty__sub">Your orders will appear here once you make a purchase.</p>
-          <RouterLink class="button w-full sm:w-auto" to="/products">Start Shopping</RouterLink>
+          <p class="orders-empty__title">{{ t('orders.empty') }}</p>
+          <p class="orders-empty__sub">{{ t('orders.empty_hint') }}</p>
+          <RouterLink class="button w-full sm:w-auto" to="/products">{{ t('orders.start_shopping') }}</RouterLink>
         </div>
 
         <div class="orders-list">
@@ -123,7 +137,7 @@ onMounted(loadOrders);
                   <span class="order-card__date">{{ formatDate(order.created_at) }}</span>
                 </div>
                 <span v-if="order.items?.length" class="order-card__item-count">
-                  {{ order.items.length }} item{{ order.items.length !== 1 ? 's' : '' }}
+                  {{ order.items.length }} {{ t('orders.items') }}
                 </span>
               </div>
               <div class="order-card__status-wrap">
@@ -170,12 +184,28 @@ onMounted(loadOrders);
                 {{ order.shipping_address }}
               </div>
               <div class="order-card__total">
-                <span>Total</span>
+                <span>{{ t('orders.total_label') }}</span>
                 <strong>{{ formatCurrency(order.total_amount) }}</strong>
               </div>
             </div>
           </article>
         </div>
+
+        <nav v-if="lastPage > 1" class="pagination">
+          <button class="pagination__btn" :disabled="currentPage <= 1" @click="goToPage(currentPage - 1)">
+            {{ t('orders.prev') }}
+          </button>
+          <button
+            v-for="p in lastPage"
+            :key="p"
+            class="pagination__page"
+            :class="{ 'pagination__page--active': p === currentPage }"
+            @click="goToPage(p)"
+          >{{ p }}</button>
+          <button class="pagination__btn" :disabled="currentPage >= lastPage" @click="goToPage(currentPage + 1)">
+            {{ t('orders.next') }}
+          </button>
+        </nav>
       </template>
     </section>
     <RateOrderModal
@@ -478,6 +508,67 @@ onMounted(loadOrders);
   font-size: 1.05rem;
   font-weight: 800;
   color: var(--text);
+}
+
+/* ─── Pagination ─── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 24px 0 0;
+  flex-wrap: wrap;
+}
+
+.pagination__btn {
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pagination__btn:hover:not(:disabled) {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.pagination__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination__page {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pagination__page:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.pagination__page--active {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  border-color: transparent;
 }
 
 @media (max-width: 1024px) {
