@@ -17,6 +17,7 @@ import CategoriesView from '../views/CategoriesView.vue';
 import PromotionsView from '../views/PromotionsView.vue';
 import AdminForgotPasswordView from '../views/admin/AdminForgotPasswordView.vue';
 import AdminResetPasswordView from '../views/admin/AdminResetPasswordView.vue';
+import ReportsView from '../views/ReportsView.vue';
 import { fetchCurrentUser, useAuth } from '../stores/auth';
 
 const routes = [
@@ -40,6 +41,9 @@ const routes = [
   { path: '/admin/login', name: 'admin-login', component: LoginView, meta: { guestOnly: true, layout: 'auth' } },
   { path: '/admin/forgot-password', name: 'admin-forgot-password', component: AdminForgotPasswordView, meta: { guestOnly: true, layout: 'auth' } },
   { path: '/admin/reset-password', name: 'admin-reset-password', component: AdminResetPasswordView, meta: { guestOnly: true, layout: 'auth' } },
+
+  // Reports
+  { path: '/reports', name: 'reports', component: ReportsView, meta: { requiresAuth: true } },
 ];
 
 const router = createRouter({

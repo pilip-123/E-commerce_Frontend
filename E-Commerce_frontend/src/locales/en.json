@@ -10,6 +10,7 @@
   "nav.login": "Login",
   "nav.register": "Register",
   "nav.logout": "Logout",
+  "nav.reports": "Reports",
   "nav.search": "Search...",
   "nav.language": "Language",
 
@@ -133,5 +134,19 @@
   "product.quantity": "Quantity",
   "product.back": "Back to Products",
 
-  "footer.rights": "All rights reserved."
+  "footer.rights": "All rights reserved.",
+
+  "reports.title": "Reports",
+  "reports.subtitle": "View sales performance, revenue breakdown, top customers and best-selling products.",
+  "reports.daily": "Daily Sales",
+  "reports.monthly": "Monthly Sales",
+  "reports.revenue": "Revenue",
+  "reports.top_customers": "Top Customers",
+  "reports.best_sellers": "Best Sellers",
+  "reports.total_sales": "Total Sales",
+  "reports.total_revenue": "Total Revenue",
+  "reports.average_order": "Average Order",
+  "reports.growth": "vs previous period",
+  "reports.loading": "Loading report data...",
+  "reports.no_data": "No data found."
 }

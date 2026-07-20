@@ -7,7 +7,7 @@ import WelcomeBanner from './components/WelcomeBanner.vue';
 
 const route = useRoute();
 const isAuthPage = computed(() => route.meta?.layout === 'auth');
-const hideBanner = computed(() => ['cart', 'orders', 'wishlist', 'products', 'promotions', 'about'].includes(route.name));
+const hideBanner = computed(() => ['checkout', 'cart', 'orders', 'wishlist', 'products', 'promotions', 'about', 'profile'].includes(route.name));
 </script>
 
 <template>

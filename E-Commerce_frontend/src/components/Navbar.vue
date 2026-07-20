@@ -33,6 +33,10 @@ const initials = computed(() => {
     .slice(0, 2);
 });
 
+const isStaffUser = computed(() => {
+  return auth.user && (auth.user.role === 'admin' || auth.user.role === 'manager' || auth.user.role === 'staff');
+});
+
 function confirmLogout() {
   showLogoutModal.value = true;
   mobileOpen.value = false;
@@ -64,6 +68,7 @@ async function handleLogout() {
           <RouterLink to="/" class="nav__link" @click="mobileOpen = false">{{ t('nav.home') }}</RouterLink>
           <RouterLink to="/products" class="nav__link" @click="mobileOpen = false">{{ t('nav.products') }}</RouterLink>
           <RouterLink to="/promotions" class="nav__link nav__link--hot" @click="mobileOpen = false">{{ t('nav.promotions') }}</RouterLink>
+          <RouterLink v-if="isStaffUser" to="/reports" class="nav__link nav__link--admin" @click="mobileOpen = false">Reports</RouterLink>
         </div>
 
         <div v-if="auth.user" class="nav__secondary">
@@ -112,6 +117,7 @@ async function handleLogout() {
       <RouterLink to="/" class="nav__link" @click="mobileOpen = false">{{ t('nav.home') }}</RouterLink>
       <RouterLink to="/products" class="nav__link" @click="mobileOpen = false">{{ t('nav.products') }}</RouterLink>
       <RouterLink to="/promotions" class="nav__link nav__link--hot" @click="mobileOpen = false">{{ t('nav.promotions') }}</RouterLink>
+      <RouterLink v-if="isStaffUser" to="/reports" class="nav__link nav__link--admin" @click="mobileOpen = false">Reports</RouterLink>
     </div>
 
     <div v-if="auth.user" class="nav__secondary">
@@ -318,6 +324,10 @@ async function handleLogout() {
 .nav__link--hot:global(.router-link-exact-active) {
   color: #fff;
   background: rgba(255, 255, 255, 0.2);
+}
+
+.nav__link--admin {
+  color: #a7f3d0;
 }
 
 .nav-actions {
