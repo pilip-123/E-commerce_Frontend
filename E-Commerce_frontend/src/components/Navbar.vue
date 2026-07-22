@@ -344,17 +344,19 @@ async function handleLogout() {
 }
 
 .nav-user__avatar {
-  width: 30px;
-  height: 30px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   overflow: hidden;
   flex: none;
-  border: 2px solid transparent;
-  transition: border-color 0.2s;
+  border: 2.5px solid rgba(255, 255, 255, 0.6);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .nav-user__avatar:hover {
-  border-color: rgba(255, 255, 255, 0.6);
+  border-color: #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
 }
 
 .nav-user__img {
@@ -370,7 +372,7 @@ async function handleLogout() {
   place-items: center;
   background: linear-gradient(135deg, #22c55e, #16a34a);
   color: #fff;
-  font-size: 0.78rem;
+  font-size: 1rem;
   font-weight: 700;
 }
 
@@ -378,10 +380,10 @@ async function handleLogout() {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 42px;
+  height: 42px;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   background: transparent;
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
@@ -564,13 +566,13 @@ async function handleLogout() {
   }
 
   .nav-user__avatar {
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
   }
 
   .nav-logout {
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
   }
 }
 

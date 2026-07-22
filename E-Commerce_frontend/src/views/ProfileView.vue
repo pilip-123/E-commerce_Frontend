@@ -18,6 +18,15 @@ const form = reactive({
   address: '',
 });
 
+const passwordForm = reactive({
+  current_password: '',
+  new_password: '',
+  new_password_confirmation: '',
+});
+const passwordSaving = ref(false);
+const passwordMessage = ref('');
+const passwordError = ref('');
+
 const summary = ref({
   orders: 0,
   wishlist: 0,
@@ -117,6 +126,24 @@ async function handleSubmit() {
     errorMessage.value = error.response?.data?.message ?? 'Unable to update profile.';
   } finally {
     saving.value = false;
+  }
+}
+
+async function handlePasswordChange() {
+  passwordSaving.value = true;
+  passwordMessage.value = '';
+  passwordError.value = '';
+
+  try {
+    const { data } = await api.post('/profile/password', passwordForm);
+    passwordMessage.value = data.message;
+    passwordForm.current_password = '';
+    passwordForm.new_password = '';
+    passwordForm.new_password_confirmation = '';
+  } catch (error) {
+    passwordError.value = error.response?.data?.message ?? 'Unable to change password.';
+  } finally {
+    passwordSaving.value = false;
   }
 }
 
@@ -343,61 +370,109 @@ onMounted(async () => {
 
       <!-- Edit Tab -->
       <template v-if="activeTab === 'edit'">
-        <div class="content-layout content-layout--centered">
+        <div class="edit-grid">
           <div class="card edit-card">
-            <h3 class="card-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-              {{ t('profile.update') }}
-            </h3>
+            <div class="edit-card-header">
+              <div class="edit-card-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div>
+                <h3 class="edit-card-title">Profile Information</h3>
+                <p class="edit-card-sub">Update your personal details and photo</p>
+              </div>
+            </div>
 
             <form @submit.prevent="handleSubmit">
               <div class="edit-avatar-row">
                 <div class="edit-avatar" @click="openImagePicker">
                   <img v-if="avatarPreview || avatarUrl" :src="avatarPreview || avatarUrl" :alt="t('profile.title')" class="edit-avatar-img">
                   <div v-else class="edit-avatar-placeholder">{{ initials }}</div>
-                  <div class="edit-avatar-overlay">{{ t('profile.update') }}</div>
+                  <div class="edit-avatar-overlay">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
                 </div>
-                <div class="edit-avatar-btns">
-                  <button class="avatar-icon-btn" type="button" @click="openImagePicker" :title="t('general.save')">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                  </button>
-                  <button v-if="avatarPreview || avatarUrl" class="avatar-icon-btn avatar-icon-btn--remove" type="button" @click="removeImage" :title="t('general.delete')">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                  </button>
+                <div>
+                  <p class="edit-avatar-name">{{ auth.user?.name ?? 'User' }}</p>
+                  <p class="edit-avatar-email">{{ email }}</p>
+                  <button class="btn-outline btn-xs" type="button" @click="openImagePicker">Change Photo</button>
                 </div>
               </div>
 
               <div class="form-fields">
-                <div>
-                  <label class="field-label">{{ t('profile.personal') }}</label>
-                  <input v-model="form.name" class="field-input" type="text" required>
+                <div class="field-group">
+                  <label class="field-label">Full Name</label>
+                  <input v-model="form.name" class="field-input" type="text" required placeholder="Enter your full name">
                 </div>
-                <div>
-                  <label class="field-label">{{ t('auth.email') }}</label>
-                  <input :value="email" class="field-input" type="email" disabled>
+                <div class="field-group">
+                  <label class="field-label">Phone Number</label>
+                  <input v-model="form.phone" class="field-input" type="text" placeholder="Enter your phone number">
                 </div>
-                <div>
-                  <label class="field-label">{{ t('auth.email') }}</label>
-                  <input v-model="form.phone" class="field-input" type="text">
-                </div>
-                <div>
-                  <label class="field-label">{{ t('checkout.shipping') }}</label>
-                  <textarea v-model="form.address" class="field-input" rows="3"></textarea>
+                <div class="field-group">
+                  <label class="field-label">Shipping Address</label>
+                  <textarea v-model="form.address" class="field-input" rows="3" placeholder="Enter your shipping address"></textarea>
                 </div>
               </div>
 
-              <p v-if="message" class="form-success">{{ message }}</p>
-              <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
+              <p v-if="message" class="form-message form-message--success">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                {{ message }}
+              </p>
+              <p v-if="errorMessage" class="form-message form-message--error">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                {{ errorMessage }}
+              </p>
 
               <div class="edit-actions">
                 <button class="btn-primary" type="submit" :disabled="saving">
+                  <svg v-if="saving" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                   {{ saving ? t('general.loading') : t('general.save') }}
                 </button>
-                <button class="btn-ghost" type="button" @click="activeTab = 'profile'" :title="t('general.cancel')">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
+                <button class="btn-ghost" type="button" @click="activeTab = 'profile'">Cancel</button>
               </div>
             </form>
+          </div>
+
+          <div class="card pass-card">
+            <div class="edit-card-header">
+              <div class="edit-card-icon edit-card-icon--lock">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div>
+                <h3 class="edit-card-title">Change Password</h3>
+                <p class="edit-card-sub">Set a new password for your account</p>
+              </div>
+            </div>
+
+            <div class="form-fields">
+              <div class="field-group">
+                <label class="field-label">Current Password</label>
+                <input v-model="passwordForm.current_password" class="field-input" type="password" placeholder="Enter current password">
+              </div>
+              <div class="field-group">
+                <label class="field-label">New Password</label>
+                <input v-model="passwordForm.new_password" class="field-input" type="password" placeholder="Min 8 characters">
+              </div>
+              <div class="field-group">
+                <label class="field-label">Confirm New Password</label>
+                <input v-model="passwordForm.new_password_confirmation" class="field-input" type="password" placeholder="Re-enter new password">
+              </div>
+            </div>
+
+            <p v-if="passwordMessage" class="form-message form-message--success">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              {{ passwordMessage }}
+            </p>
+            <p v-if="passwordError" class="form-message form-message--error">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              {{ passwordError }}
+            </p>
+
+            <button class="btn-primary btn-full" type="button" @click="handlePasswordChange" :disabled="passwordSaving">
+              <svg v-if="passwordSaving" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              {{ passwordSaving ? t('general.loading') : 'Update Password' }}
+            </button>
           </div>
         </div>
       </template>
@@ -858,26 +933,83 @@ onMounted(async () => {
   margin-bottom: 16px;
 }
 
-/* ─── Edit Card ─── */
-.edit-card {
-  max-width: 560px;
+/* ─── Edit Grid ─── */
+.edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
 }
 
+.edit-card,
+.pass-card {
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.edit-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f5;
+}
+
+.edit-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent), #7c7cdb);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.edit-card-icon--lock {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.edit-card-title {
+  margin: 0 0 2px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.edit-card-sub {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* ─── Avatar Row ─── */
 .edit-avatar-row {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f5;
 }
 
 .edit-avatar {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   overflow: hidden;
   position: relative;
   cursor: pointer;
-  border: 2px solid var(--accent-light);
+  border: 3px solid var(--accent-light);
+  flex-shrink: 0;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.edit-avatar:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
 .edit-avatar-img {
@@ -894,7 +1026,7 @@ onMounted(async () => {
   background: linear-gradient(135deg, var(--accent), #7c7cdb);
   color: #fff;
   font-weight: 700;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
 }
 
 .edit-avatar-overlay {
@@ -902,20 +1034,38 @@ onMounted(async () => {
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.5);
   color: #fff;
-  font-size: 0.7rem;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.25s;
 }
 
 .edit-avatar:hover .edit-avatar-overlay {
   opacity: 1;
 }
 
+.edit-avatar-name {
+  margin: 0 0 2px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.edit-avatar-email {
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  color: #9ca3af;
+}
+
+/* ─── Form Fields ─── */
 .form-fields {
   display: grid;
-  gap: 14px;
+  gap: 16px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
 }
 
 .field-label {
@@ -923,34 +1073,47 @@ onMounted(async () => {
   font-size: 0.8rem;
   font-weight: 600;
   color: #374151;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .field-input {
   width: 100%;
-  padding: 10px 14px;
-  border: 1px solid #e5e7eb;
+  padding: 11px 14px;
+  border: 1.5px solid #e5e7eb;
   border-radius: 10px;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   outline: none;
   background: #fff;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
 }
 
 .field-input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
 .field-input:disabled {
   background: #f9fafb;
   color: #9ca3af;
+  border-color: #e5e7eb;
+}
+
+.field-input::placeholder {
+  color: #b0b7c3;
 }
 
 .edit-actions {
   display: flex;
   gap: 10px;
   margin-top: 20px;
+}
+
+.btn-full {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px 22px;
+  font-size: 0.9rem;
 }
 
 /* ─── Buttons ─── */
@@ -999,61 +1162,71 @@ onMounted(async () => {
   opacity: 0.92;
 }
 
-.edit-avatar-btns {
-  display: flex;
-  gap: 8px;
-}
-
-.avatar-icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #fff;
-  color: var(--accent);
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-}
-
-.avatar-icon-btn:hover {
-  background: var(--accent-soft);
-  border-color: var(--accent);
-}
-
-.avatar-icon-btn--remove {
-  color: #dc2626;
-}
-
-.avatar-icon-btn--remove:hover {
-  background: rgba(220, 38, 38, 0.08);
-  border-color: #dc2626;
-}
-
 .btn-small {
   padding: 7px 16px;
   font-size: 0.82rem;
 }
 
-.btn-ghost {
+.btn-outline {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
+  padding: 8px 16px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  color: #6b7280;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  border-color: var(--accent);
   color: var(--accent);
-  font-weight: 500;
+  background: var(--accent-soft);
+}
+
+.btn-outline--danger {
+  color: #dc2626;
+}
+
+.btn-outline--danger:hover {
+  border-color: #dc2626;
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.06);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.78rem;
+}
+
+.btn-xs {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border-radius: 8px;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #6b7280;
+  font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .btn-ghost:hover {
-  background: var(--accent-soft);
+  background: #f3f4f6;
+  color: #374151;
 }
 
 .text-danger {
@@ -1093,22 +1266,37 @@ onMounted(async () => {
   pointer-events: none;
 }
 
-.form-success {
-  margin: 12px 0 0;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: rgba(91, 91, 214, 0.08);
-  color: var(--accent);
+.form-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 12px 16px;
+  border-radius: 12px;
   font-size: 0.85rem;
+  font-weight: 500;
 }
 
-.form-error {
-  margin: 12px 0 0;
-  padding: 10px 14px;
-  border-radius: 10px;
+.form-message svg {
+  flex: none;
+}
+
+.form-message--success {
+  background: rgba(91, 91, 214, 0.08);
+  color: var(--accent);
+}
+
+.form-message--error {
   background: rgba(220, 38, 38, 0.08);
   color: #dc2626;
-  font-size: 0.85rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
 }
 
 /* ─── Responsive ─── */
@@ -1152,6 +1340,10 @@ onMounted(async () => {
   .tabs {
     width: max-content;
   }
+
+  .edit-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1180,9 +1372,28 @@ onMounted(async () => {
     flex-wrap: wrap;
   }
 
-  .edit-avatar-row {
-    flex-direction: column;
-    align-items: flex-start;
+  .edit-card,
+  .pass-card {
+    padding: 20px;
+  }
+
+  .edit-avatar {
+    width: 64px;
+    height: 64px;
+  }
+
+  .edit-card-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .edit-card-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .edit-card-title {
+    font-size: 0.95rem;
   }
 }
 </style>

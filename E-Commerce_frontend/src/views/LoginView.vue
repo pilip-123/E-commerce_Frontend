@@ -233,7 +233,7 @@ async function socialLogin(provider) {
         <!-- Social login -->
         <div class="mt-6 flex items-center gap-3">
           <span class="flex-1 h-px bg-gray-200"></span>
-          <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">{{ t('general.no_data') }}</span>
+          <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">or continue with</span>
           <span class="flex-1 h-px bg-gray-200"></span>
         </div>
         <div class="mt-4 grid grid-cols-2 gap-3">
