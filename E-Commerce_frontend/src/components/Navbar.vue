@@ -574,6 +574,37 @@ async function handleLogout() {
     width: 42px;
     height: 42px;
   }
+
+  .nav-mobile .nav__link {
+    color: var(--text);
+  }
+
+  .nav-mobile .nav__link:hover {
+    background: var(--accent-soft);
+    color: var(--text);
+  }
+
+  .nav-mobile .nav__link:global(.router-link-exact-active) {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .nav-mobile .nav__link--hot {
+    color: #dc2626;
+  }
+
+  .nav-mobile .nav__link--hot:hover {
+    color: #dc2626;
+  }
+
+  .nav-mobile .nav__link--admin {
+    color: #166534;
+  }
+
+  .nav-mobile .active-lang {
+    color: var(--accent) !important;
+  }
 }
 
 @media (max-width: 380px) {

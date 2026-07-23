@@ -322,4 +322,32 @@ function removeDiscount() {
   background: rgba(220, 38, 38, 0.08);
 }
 
+@media (max-width: 640px) {
+  .page {
+    gap: 16px;
+  }
+
+  .checkout-summary {
+    padding: 20px;
+  }
+
+  .checkout-summary h3 {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .checkout-summary .button {
+    width: 100%;
+  }
+
+  .discount-apply-btn {
+    height: 40px;
+    width: 48px;
+    flex-shrink: 0;
+  }
+
+  .grid-products {
+    gap: 14px;
+  }
+}
 </style>

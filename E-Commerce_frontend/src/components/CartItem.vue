@@ -143,4 +143,47 @@ const discountLabel = computed(() => {
 .delete-btn:active {
   transform: scale(0.95);
 }
+
+@media (max-width: 640px) {
+  .line-item__image {
+    height: 70px !important;
+    border-radius: 12px;
+  }
+
+  .line-item__image-wrap {
+    border-radius: 14px;
+  }
+
+  .line-item__body h3 {
+    font-size: 0.85rem;
+    line-height: 1.3;
+  }
+
+  .line-item__body p {
+    font-size: 0.8rem;
+    margin-top: 4px;
+  }
+
+  .line-item__right {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .line-item__subtotal {
+    font-size: 0.88rem;
+  }
+
+  .qty-btn {
+    width: 36px;
+    height: 32px;
+  }
+
+  .delete-btn {
+    width: 36px;
+    height: 32px;
+  }
+}
 </style>
